@@ -1,6 +1,9 @@
 """
 This Module processes the data received in the 'nation_2021-10-28.csv' file
 """
+import json
+import requests
+from uk_covid19 import Cov19API
 
 
 def parse_csv_data(csv_filename):
@@ -38,4 +41,53 @@ def process_covid_csv_data(covid_csv_data):
     while covid_csv_data[count].split(',')[4] == '':
         count += 1
     total_deaths = int(covid_csv_data[count].split(',')[4])
+    return week_cases, hospital_cases, total_deaths
+
+
+def covid_API_request(location="Exeter", location_type="ltla"):
+    """
+    Retrieves COVID data from the public health England API
+    Will be able to search based on the location and location_type passed in as parameters
+    :param location: location to be searched for in API
+    :param location_type: type of entry location is
+    :return: Data returned from PHE API in json format
+    """
+    location_entry = [
+        'areaName='+location,
+        'areaType='+location_type
+    ]
+    data_required = {
+        "areaCode": "areaCode",
+        "areaName": "areaName",
+        "areaType": "areaType",
+        "date": "date",
+        "cumDailyNsoDeathsByDeathDate": "cumDailyNsoDeathsByDeathDate",
+        "hospitalCases": "hospitalCases",
+        "newCasesBySpecimenDate": "newCasesBySpecimenDate"
+    }
+    api = Cov19API(filters=location_entry, structure=data_required)
+    response = api.get_json()
+    return response['data']
+
+
+def process_covid_API(covid_json):
+    """
+    Retrieves weekly cases, hospital cases and total deaths from the json
+    :param covid_json: Data retrieved from the API call
+    :return: weekly cases, hospital cases, total deaths
+    """
+    # calculates weekly cases by summing last 7 entries exluding most recent entry
+    week_cases = 0
+    for i in range(2, 9):
+        week_cases += covid_json[i]['newCasesBySpecimenDate']
+    # calculates hospital cases by reading value in JSON file
+    hospital_cases = covid_json[1]['hospitalCases']
+    # iterates through json until an entry for cumulative deaths is found
+    count = 1
+    while covid_json[count]['cumDailyNsoDeathsByDeathDate'] is None and count < len(covid_json)-1:
+        count += 1
+    if count == len(covid_json):
+        total_deaths = None
+    else:
+        total_deaths = covid_json[count]['cumDailyNsoDeathsByDeathDate']
     return week_cases, hospital_cases, total_deaths
