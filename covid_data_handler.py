@@ -1,9 +1,9 @@
 """
 This Module processes the data received in the 'nation_2021-10-28.csv' file
 """
-import json
-import requests
 from uk_covid19 import Cov19API
+import sched
+import time
 
 
 def parse_csv_data(csv_filename):
@@ -91,3 +91,22 @@ def process_covid_API(covid_json):
     else:
         total_deaths = covid_json[count]['cumDailyNsoDeathsByDeathDate']
     return week_cases, hospital_cases, total_deaths
+
+
+def schedule_covid_updates(update_interval, update_name):
+    """
+    Will carry out the function denoted by update_name after the interval shown by update_interval
+    :param update_interval:
+    :param update_name:
+    :return:
+    """
+    s = sched.scheduler(time.time, time.sleep)
+    s.enter(update_interval, 1, update_name)
+    s.run()
+
+
+def update_covid_data():
+    """
+    The function called by the scheduler to print the covid data from the API
+    """
+    print(process_covid_API(covid_API_request()))
