@@ -28,7 +28,7 @@ def index():
         # check scheduler_time exists
         scheduler_time = request.arg.get('update')
         schedule_add_news()
-    return render_template('index.html', title='Daily Update', news_articles=articles)
+    return render_template('index.html', title='Daily Update', news_articles=articles, image='covid_image.jpeg')
 
 
 if __name__ == '__main__':
