@@ -1,22 +1,24 @@
 """
 This Module processes the data received in the 'nation_2021-10-28.csv' file
+and receives information from the public health England API
 """
-from uk_covid19 import Cov19API
 import sched
 import time
+from uk_covid19 import Cov19API
 
 
 def parse_csv_data(csv_filename):
     """
-    This function will read from the 'nation_2021-10-28' file and return a list of strings corresponding to each
-    line of the csv file.
+    This function will read from the 'nation_2021-10-28' file and return a list of strings
+    corresponding to each line of the csv file.
     :param csv_filename:
     :return: List[str] of each line of the csv file
     """
     data = []
-    # Iterates through the file and strips '\n' from each line before adding the line as a string to the data list
-    with open(csv_filename, 'r') as f:
-        for row in f:
+    # Iterates through the file and strips '\n' from each line before
+    # adding the line as a string to the data list
+    with open(csv_filename, 'r', encoding="utf-8") as file:
+        for row in file:
             data.append(row.rstrip())
     return data
 
@@ -100,9 +102,9 @@ def schedule_covid_updates(update_interval, update_name):
     :param update_name:
     :return:
     """
-    s = sched.scheduler(time.time, time.sleep)
-    s.enter(update_interval, 1, update_name)
-    s.run()
+    scheduler = sched.scheduler(time.time, time.sleep)
+    scheduler.enter(update_interval, 1, update_name)
+    scheduler.run()
 
 
 def update_covid_data():
