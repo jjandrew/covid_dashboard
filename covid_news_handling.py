@@ -37,6 +37,3 @@ def update_news():
         for article in response['articles']:
             articles.append(article)
     return articles
-
-
-update_news()

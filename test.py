@@ -1,9 +1,9 @@
 from covid_data_handler import parse_csv_data
 from covid_data_handler import process_covid_csv_data
-from covid_data_handler import covid_API_request
-from covid_data_handler import process_covid_API
 from covid_data_handler import schedule_covid_updates
 from covid_data_handler import update_covid_data
+from tests import test_covid_data_handler
+from tests import test_news_data_handling
 
 
 def test_parse_csv_data():
@@ -19,20 +19,33 @@ def test_process_covid_csv_data():
     assert total_deaths == 141_544
 
 
-def test_covid_API_request():
-    print(covid_API_request())
-
-
-def test_process_covid_API():
-    print(process_covid_API(covid_API_request()))
-
-
 def test_schedule_covid_updates():
     schedule_covid_updates(5, update_covid_data)
 
 
 test_parse_csv_data()
+print('Test 1 finished')
 test_process_covid_csv_data()
-# test_covid_API_request()
-test_process_covid_API()
+print('Test 2 finished')
 test_schedule_covid_updates()
+print('Test 3 finished')
+test_covid_data_handler.test_process_covid_csv_data()
+print('Test 4 finished')
+test_covid_data_handler.test_parse_csv_data()
+print('Test 5 finished')
+test_covid_data_handler.test_covid_API_request()
+print('Test 6 finished')
+try:
+    test_covid_data_handler.test_schedule_covid_updates()
+except AssertionError:
+    print("Test 7 failed")
+except TypeError:
+    print("Test 7 failed")
+print('Test 7 finished')
+try:
+    test_news_data_handling.test_update_news()
+except TypeError:
+    print("Test 8 failed")
+print('Test 8 finished')
+test_news_data_handling.test_news_API_request()
+print('Test 9 finished')

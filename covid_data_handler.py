@@ -69,10 +69,11 @@ def covid_API_request(location="Exeter", location_type="ltla"):
     }
     api = Cov19API(filters=location_entry, structure=data_required)
     response = api.get_json()
-    return response['data']
+    return response
 
 
 def process_covid_API(covid_json):
+    covid_json = covid_json['data']
     """
     Retrieves weekly cases, hospital cases and total deaths from the json
     :param covid_json: Data retrieved from the API call
@@ -111,4 +112,5 @@ def update_covid_data():
     """
     The function called by the scheduler to print the covid data from the API
     """
-    print(process_covid_API(covid_API_request()))
+    # print(process_covid_API(covid_API_request()))
+    return
