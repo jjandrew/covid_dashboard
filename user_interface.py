@@ -1,5 +1,5 @@
 """
-This is the main module which will deal with flask as well as the scheduling of events
+This is the main module which will deal with flask and the flow of the program
 """
 import sched
 import time
@@ -12,9 +12,11 @@ from covid_data_handler import covid_API_request
 
 
 # error with internal server error when event is scheduled and run
+# Default values are received for when the website is first opened
+# Scheduler and app are also created here
 articles = update_news()
 week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
-scheduled_events = [{'title': 'TEST', 'content': 'Content'}]
+scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
 
@@ -39,7 +41,7 @@ def covid_data_update():
 
 def event_update(title, content):
     """
-    This procedure will add an event to thee scheduled_events array
+    This procedure will add an event to the scheduled_events array
     This will be added to the left hand side of the webpage
     :param title: Title of the event
     :param content: Content displayed under the title
@@ -47,6 +49,7 @@ def event_update(title, content):
     scheduled_events.append({'title': title, 'content': content})
 
 
+# These need to be moved into covid_news_handling and covid_data_handler
 def schedule_add_news(delay=15, repeat=False):
     """
     Adds an event to the scheduler to update the news
@@ -75,16 +78,21 @@ def index():
     This procedure checks if an action has been carried out on the webpage
     This procedure also sets the values for events, news, covid data and images
     """
+    # Runs the scheduler making sure not to stop other commands being carried out
     if s:
         s.run(blocking=False)
     label_name = request.args.get('two')
+    # Checks if a scheduled event has been added
     if label_name:
-        # check scheduler_time exists
+        # Checks if a time has been added along with an article
         scheduler_time = request.args.get('update')
         if scheduler_time:
+            # Receives information on what is to be updated
             repeat = request.args.get('repeat')
             data_to_update = request.args.get('covid-data')
             news_to_update = request.args.get('news')
+            # Will update both schedulers if both news and covid data are to be updated
+            # Will also deal if only one is to updated or neither
             if data_to_update and news_to_update:
                 event_update(label_name, scheduler_time)
                 schedule_update_data()
@@ -99,6 +107,7 @@ def index():
                 print('Nothing to update')
         else:
             print("No time provided")
+    # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
                            updates=scheduled_events, image='covid_image.jpeg',
                            national_7day_infections=week_figs, hospital_cases=hospital_figs,

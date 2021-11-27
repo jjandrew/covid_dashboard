@@ -73,12 +73,12 @@ def covid_API_request(location="Exeter", location_type="ltla"):
 
 
 def process_covid_API(covid_json):
-    covid_json = covid_json['data']
     """
     Retrieves weekly cases, hospital cases and total deaths from the json
     :param covid_json: Data retrieved from the API call
     :return: weekly cases, hospital cases, total deaths
     """
+    covid_json = covid_json['data']
     # calculates weekly cases by summing last 7 entries exluding most recent entry
     week_cases = 0
     for i in range(2, 9):
