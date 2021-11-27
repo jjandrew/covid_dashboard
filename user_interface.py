@@ -3,10 +3,10 @@ This is the main module which will deal with flask and the flow of the program
 """
 import sched
 import time
-from decode_config import decode_config
 from flask import Flask
 from flask import render_template
 from flask import request
+from decode_config import decode_config
 from covid_news_handling import update_news
 from covid_data_handler import process_covid_API
 from covid_data_handler import covid_API_request
@@ -16,11 +16,22 @@ from covid_data_handler import covid_API_request
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
 articles = update_news()
-week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
 scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
 location, location_type, _, _, image_name = decode_config()
+week_figs, hospital_figs, total_deaths = 0, 0, 0
+
+
+if image_name == "":
+    image_name = "covid_image.jpeg"
+
+
+if location == "" or location_type == "":
+    week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
+else:
+    week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request(location,
+                                                                                 location_type))
 
 
 def news_update():

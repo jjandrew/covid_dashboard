@@ -11,16 +11,16 @@ def decode_config():
     try:
         location = json_file["location"]
     except KeyError:
-        location = None
+        location = ""
     try:
         location_type = json_file["location_type"]
     except KeyError:
-        location_type = None
+        location_type = ""
     try:
         news_api_key = json_file["news_api_key"]
     except KeyError:
         print("No key provided")
-        news_api_key = None
+        news_api_key = ""
     try:
         search_terms = json_file["search_terms"]
     except KeyError:
