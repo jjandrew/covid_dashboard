@@ -3,6 +3,7 @@ This is the main module which will deal with flask and the flow of the program
 """
 import sched
 import time
+from decode_config import decode_config
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -19,6 +20,7 @@ week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
 scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
+location, location_type, news_api_key, search_terms, image_name = decode_config()
 
 
 def news_update():
