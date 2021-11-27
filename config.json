@@ -1,7 +1,7 @@
 {
-  "location": "a",
-  "location_type": "b",
-  "news_api_key": "c",
-  "search_terms": "d",
-  "image_name": "e"
+  "location": "",
+  "location_type": "",
+  "news_api_key": "",
+  "search_terms": "",
+  "image_name": ""
 }

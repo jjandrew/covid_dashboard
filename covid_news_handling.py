@@ -4,6 +4,7 @@ It has two functions one for calling API and one for processing the responses
 """
 import requests
 from keys import get_newsapi_key
+from decode_config import decode_config
 
 
 removed = []
@@ -35,8 +36,16 @@ def update_news():
     responses appending each article to an array.
     :return: articles returned from the various API calls
     """
+    # Will check if search terms were provided in the config file
+    # need to change 3rd below to retrieve api_key from config file
+    _, _, _, search_terms, _ = decode_config()
+    api_responses = []
     # Receives api responses from news_API_request function
-    api_responses = news_API_request()
+    if search_terms == "":
+        # Will use default values if empty string is used
+        api_responses = news_API_request()
+    else:
+        api_responses = news_API_request(search_terms)
     articles = []
     # Cycles through responses adding each article to an array
     for response in api_responses:

@@ -20,7 +20,7 @@ week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
 scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
-location, location_type, news_api_key, search_terms, image_name = decode_config()
+location, location_type, _, _, image_name = decode_config()
 
 
 def news_update():
@@ -111,7 +111,7 @@ def index():
             print("No time provided")
     # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
-                           updates=scheduled_events, image='covid_image.jpeg',
+                           updates=scheduled_events, image=image_name,
                            national_7day_infections=week_figs, hospital_cases=hospital_figs,
                            deaths_total=total_deaths)
 
