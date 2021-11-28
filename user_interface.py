@@ -83,6 +83,19 @@ def remove_event(title):
             break
 
 
+def event_exists(title):
+    """
+    Will cycle through events with the title provided from scheduled_events
+    :param title: the title of the event to be removed
+    :return True if event present otherwise False
+    """
+    present = False
+    for event in scheduled_events:
+        if event['title'] == title:
+            present = True
+    return present
+
+
 # These need to be moved into covid_news_handling and covid_data_handler
 def schedule_add_news(delay=15, repeat=False):
     """
@@ -125,29 +138,33 @@ def index():
     label_name = request.args.get('two')
     # Checks if a scheduled event has been added
     if label_name:
-        # Checks if a time has been added along with an article
-        scheduler_time = request.args.get('update')
-        if scheduler_time:
-            # Receives information on what is to be updated
-            repeat = request.args.get('repeat')
-            data_to_update = request.args.get('covid-data')
-            news_to_update = request.args.get('news')
-            # Will update both schedulers if both news and covid data are to be updated
-            # Will also deal if only one is to updated or neither
-            if data_to_update and news_to_update:
-                event_update(label_name, scheduler_time)
-                schedule_update_data()
-                schedule_add_news()
-            elif data_to_update:
-                event_update(label_name, scheduler_time)
-                schedule_update_data()
-            elif news_to_update:
-                event_update(label_name, scheduler_time)
-                schedule_add_news()
-            else:
-                print('Nothing to update')
+        # Checks if event is already in scheduler
+        if event_exists(label_name):
+            print("Error: Event already present")
         else:
-            print("No time provided")
+            # Checks if a time has been added along with an article
+            scheduler_time = request.args.get('update')
+            if scheduler_time:
+                # Receives information on what is to be updated
+                repeat = request.args.get('repeat')
+                data_to_update = request.args.get('covid-data')
+                news_to_update = request.args.get('news')
+                # Will update both schedulers if both news and covid data are to be updated
+                # Will also deal if only one is to updated or neither
+                if data_to_update and news_to_update:
+                    event_update(label_name, scheduler_time)
+                    schedule_update_data()
+                    schedule_add_news()
+                elif data_to_update:
+                    event_update(label_name, scheduler_time)
+                    schedule_update_data()
+                elif news_to_update:
+                    event_update(label_name, scheduler_time)
+                    schedule_add_news()
+                else:
+                    print('Nothing to update')
+            else:
+                print("No time provided")
     # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
                            updates=scheduled_events, image=image_name,
