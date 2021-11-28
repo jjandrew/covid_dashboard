@@ -8,6 +8,7 @@ from flask import render_template
 from flask import request
 from decode_config import decode_config
 from covid_news_handling import update_news
+from covid_news_handling import update_removed_news
 from covid_data_handler import process_covid_API
 from covid_data_handler import covid_API_request
 
@@ -96,6 +97,14 @@ def event_exists(title):
     return present
 
 
+def remove_news_from_home():
+    """
+    Changes articles when news has been removed so that the display can be updated
+    """
+    global articles
+    articles = update_news()
+
+
 # These need to be moved into covid_news_handling and covid_data_handler
 def schedule_add_news(delay=15, repeat=False):
     """
@@ -133,8 +142,11 @@ def index():
     news_to_remove = request.args.get('notif')
     if event_to_remove:
         remove_event(event_to_remove)
+    # Checks if there is news to be removed
     if news_to_remove:
-        print('sexy')
+        # Will remove news from being searched for and update the display
+        update_removed_news(news_to_remove)
+        remove_news_from_home()
     label_name = request.args.get('two')
     # Checks if a scheduled event has been added
     if label_name:

@@ -54,6 +54,14 @@ def update_news():
     for response in api_responses:
         for article in response['articles']:
             # Checks articles haven't already been removed
-            if article not in removed:
+            if article['title'] not in removed:
                 articles.append(article)
     return articles
+
+
+def update_removed_news(title):
+    """
+    This function will add a removed event to an array so it isn't searched for again
+    :param title: The title of the event that is to not be searched for again
+    """
+    removed.append(title)
