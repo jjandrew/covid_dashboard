@@ -37,7 +37,8 @@ else:
 if nation_location == "":
     nation_location = "England"
 nation_week_figs, nation_hospital_figs, nation_deaths = process_covid_API(covid_API_request
-                                                                          (nation_location, "nation"))
+                                                                          (nation_location,
+                                                                           "nation"))
 nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
 nation_deaths = "National Total Deaths: " + str(nation_deaths)
 
@@ -132,8 +133,10 @@ def index():
     # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
                            updates=scheduled_events, image=image_name,
-                           local_7day_infections=week_figs, national_7day_infections=nation_week_figs, hospital_cases=nation_hospital_figs,
-                           deaths_total=nation_deaths, location=location, nation_location=nation_location )
+                           local_7day_infections=week_figs,
+                           national_7day_infections=nation_week_figs,
+                           hospital_cases=nation_hospital_figs, deaths_total=nation_deaths,
+                           location=location, nation_location=nation_location )
 
 
 if __name__ == '__main__':
