@@ -103,9 +103,9 @@ def schedule_covid_updates(update_interval, update_name):
     :param update_name:
     :return:
     """
-    scheduler = sched.scheduler(time.time, time.sleep)
-    scheduler.enter(update_interval, 1, update_name)
-    scheduler.run()
+    # scheduler = sched.scheduler(time.time, time.sleep)
+    # scheduler.enter(update_interval, 1, update_name)
+    return update_interval, update_name
 
 
 def update_covid_data():

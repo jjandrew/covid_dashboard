@@ -72,6 +72,17 @@ def event_update(title, content):
     scheduled_events.append({'title': title, 'content': content})
 
 
+def remove_event(title):
+    """
+    Will remove event with the title provided from scheduled_events
+    :param title: the title of the event to be removed
+    """
+    for event in scheduled_events:
+        if event['title'] == title:
+            scheduled_events.remove(event)
+            break
+
+
 # These need to be moved into covid_news_handling and covid_data_handler
 def schedule_add_news(delay=15, repeat=False):
     """
@@ -89,8 +100,9 @@ def schedule_update_data(delay=15, repeat=False):
     :param repeat: Checks if the scheduled event is to be repeated, default set to False
     :param delay: Delay for the scheduler
     """
-    event = s.enter(delay, 1, news_update())
-    print(event, repeat)
+    # event = s.enter(delay, 1, news_update())
+    # print(event, repeat)
+    return
 
 
 @app.route('/index')
@@ -102,8 +114,14 @@ def index():
     This procedure also sets the values for events, news, covid data and images
     """
     # Runs the scheduler making sure not to stop other commands being carried out
-    if s:
+    if not s.empty():
         s.run(blocking=False)
+    event_to_remove = request.args.get('update_item')
+    news_to_remove = request.args.get('notif')
+    if event_to_remove:
+        remove_event(event_to_remove)
+    if news_to_remove:
+        print('sexy')
     label_name = request.args.get('two')
     # Checks if a scheduled event has been added
     if label_name:
@@ -136,7 +154,7 @@ def index():
                            local_7day_infections=week_figs,
                            national_7day_infections=nation_week_figs,
                            hospital_cases=nation_hospital_figs, deaths_total=nation_deaths,
-                           location=location, nation_location=nation_location )
+                           location=location, nation_location=nation_location)
 
 
 if __name__ == '__main__':
