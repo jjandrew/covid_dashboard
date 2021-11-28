@@ -18,7 +18,7 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
     :return: Array of the responses received from the various API calls
     """
     base_url = "https://newsapi.org/v2/everything?"
-    _, _, news_api_key, _, _ = decode_config()
+    _, _, _, news_api_key, _, _ = decode_config()
     if news_api_key == "":
         print("Error: No API key provided")
         return []
@@ -42,7 +42,7 @@ def update_news():
     """
     # Will check if search terms were provided in the config file
     # need to change 3rd below to retrieve api_key from config file
-    _, _, _, search_terms, _ = decode_config()
+    _, _, _, _, search_terms, _ = decode_config()
     # Receives api responses from news_API_request function
     if search_terms == "":
         # Will use default values if empty string is used

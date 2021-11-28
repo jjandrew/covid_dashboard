@@ -17,6 +17,10 @@ def decode_config():
     except KeyError:
         location_type = ""
     try:
+        nation_location = json_file["nation_location"]
+    except KeyError:
+        nation_location = ""
+    try:
         news_api_key = json_file["news_api_key"]
     except KeyError:
         print("No key provided")
@@ -29,4 +33,4 @@ def decode_config():
         image_name = json_file["image_name"]
     except KeyError:
         image_name = 'covid_image.jpeg'
-    return location, location_type, news_api_key, search_terms, image_name
+    return location, location_type, nation_location, news_api_key, search_terms, image_name

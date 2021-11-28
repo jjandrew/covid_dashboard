@@ -19,7 +19,7 @@ articles = update_news()
 scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
-location, location_type, _, _, image_name = decode_config()
+location, location_type, nation_location, _, _, image_name,  = decode_config()
 week_figs, hospital_figs, total_deaths = 0, 0, 0
 
 
@@ -28,10 +28,19 @@ if image_name == "":
 
 
 if location == "" or location_type == "":
+    location = "Exeter"
     week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
 else:
     week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request(location,
                                                                                  location_type))
+
+if nation_location == "":
+    nation_location = "England"
+nation_week_figs, nation_hospital_figs, nation_deaths = process_covid_API(covid_API_request
+                                                                          (nation_location, "nation"))
+nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
+nation_deaths = "National Total Deaths: " + str(nation_deaths)
+
 
 
 def news_update():
@@ -123,8 +132,8 @@ def index():
     # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
                            updates=scheduled_events, image=image_name,
-                           national_7day_infections=week_figs, hospital_cases=hospital_figs,
-                           deaths_total=total_deaths)
+                           local_7day_infections=week_figs, national_7day_infections=nation_week_figs, hospital_cases=nation_hospital_figs,
+                           deaths_total=nation_deaths, location=location, nation_location=nation_location )
 
 
 if __name__ == '__main__':
