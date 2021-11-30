@@ -12,6 +12,7 @@ from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
 from covid_data_handler import process_covid_API
 from covid_data_handler import covid_API_request
+from covid_data_handler import schedule_covid_updates
 
 
 # error with internal server error when event is scheduled and run
@@ -63,14 +64,16 @@ def covid_data_update():
     week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
 
 
-def event_update(title, content):
+def event_update(title, content, to_update, repeat):
     """
     This procedure will add an event to the scheduled_events array
     This will be added to the left hand side of the webpage
+    :param repeat: Whether the event is to be repeated
+    :param to_update: What is to be updated
     :param title: Title of the event
     :param content: Content displayed under the title
     """
-    scheduled_events.append({'title': title, 'content': content})
+    scheduled_events.append({'title': title, 'content': content, 'to_update': to_update, 'repeat': repeat})
 
 
 def remove_event(title):
@@ -117,14 +120,14 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     :param scheduler_time: The time the event is to be added
     """
     if data_to_update and news_to_update:
-        event_update(label_name, scheduler_time)
-        schedule_update_data()
+        event_update(label_name, scheduler_time, 'both', repeat)
+        schedule_covid_updates(scheduler_time, label_name)
         schedule_add_news()
     elif data_to_update:
-        event_update(label_name, scheduler_time)
-        schedule_update_data()
+        event_update(label_name, scheduler_time, 'covid', repeat)
+        schedule_covid_updates(scheduler_time, label_name)
     elif news_to_update:
-        event_update(label_name, scheduler_time)
+        event_update(label_name, scheduler_time, 'news', repeat)
         schedule_add_news()
     else:
         logging.info('Nothing provided to update')

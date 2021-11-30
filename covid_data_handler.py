@@ -5,6 +5,7 @@ and receives information from the public health England API
 import sched
 import time
 import logging
+from time_conversions import hhmm_to_seconds
 from uk_covid19 import Cov19API
 
 
@@ -115,20 +116,22 @@ def process_covid_API(covid_json):
         try:
             total_deaths = covid_json[count]['cumDailyNsoDeathsByDeathDate']
         except KeyError:
+            total_deaths = "Error"
             logging.info("Key Error reading cumulative numbers of deaths")
     return week_cases, hospital_cases, total_deaths
 
 
 def schedule_covid_updates(update_interval, update_name):
     """
-    Will carry out the function denoted by update_name after the interval shown by update_interval
-    :param update_interval:
-    :param update_name:
+    Will carry out the event denoted by update_name after the interval shown by update_interval
+    :param update_interval: Time of the update
+    :param update_name: Name of the update
     :return:
     """
+    update_interval = hhmm_to_seconds(update_interval)
     # scheduler = sched.scheduler(time.time, time.sleep)
     # scheduler.enter(update_interval, 1, update_name)
-    return update_interval, update_name
+    return
 
 
 def update_covid_data():
