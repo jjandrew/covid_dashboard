@@ -4,7 +4,7 @@ Time conversions for use with the scheduler
 import logging
 
 
-def minutes_to_seconds(minutes):
+def mins_to_secs(minutes):
     """
     Converts minutes to seconds
     :param minutes: Minutes passed in
@@ -13,7 +13,7 @@ def minutes_to_seconds(minutes):
     return int(minutes) * 60
 
 
-def hours_to_minutes(hours):
+def hrs_to_mins(hours):
     """
     Converts hours to minutes
     :param hours: Hours to be converted
@@ -22,14 +22,14 @@ def hours_to_minutes(hours):
     return int(hours) * 60
 
 
-def hhmm_to_seconds(hhmm):
+def hhmm_to_secs(hhmm):
     """
     Converts time in hhmm format into number of seconds
     :param hhmm: The time format to be converted to seconds
     :return: Seconds equivalent to hhmm argument
     """
-    if len(hhmm.split(':')) != 2:
+    parts = hhmm.split(':')
+    if len(parts) != 2:
         logging.warning('Wrong format for passing in time')
         return None
-    return minutes_to_seconds(hours_to_minutes(hhmm.split(':')[0])) + \
-           minutes_to_seconds(hhmm.split(':')[1])
+    return mins_to_secs(hrs_to_mins(parts[0])) + mins_to_secs(parts[1])
