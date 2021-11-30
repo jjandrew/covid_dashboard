@@ -3,6 +3,7 @@ This is the main module which will deal with flask and the flow of the program
 """
 import sched
 import time
+import logging
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -44,7 +45,6 @@ nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
 nation_deaths = "National Total Deaths: " + str(nation_deaths)
 
 
-
 def news_update():
     """
     Procedure for updating the global variable articles
@@ -82,6 +82,7 @@ def remove_event(title):
         if event['title'] == title:
             scheduled_events.remove(event)
             break
+    logging.warning("No event found with that name")
 
 
 def event_exists(title):
@@ -105,6 +106,30 @@ def remove_news_from_home():
     articles = update_news()
 
 
+def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_time):
+    """
+    Will update both schedulers if both news and covid data are to be updated
+    Will also deal if only one is to updated or neither
+    :param repeat: Whether the event is to be repeated every 24 hours
+    :param data_to_update: Whether the covid data is to be update
+    :param news_to_update: Whether the news is to be update
+    :param label_name: The name of the event to be added
+    :param scheduler_time: The time the event is to be added
+    """
+    if data_to_update and news_to_update:
+        event_update(label_name, scheduler_time)
+        schedule_update_data()
+        schedule_add_news()
+    elif data_to_update:
+        event_update(label_name, scheduler_time)
+        schedule_update_data()
+    elif news_to_update:
+        event_update(label_name, scheduler_time)
+        schedule_add_news()
+    else:
+        logging.info('Nothing provided to update')
+
+
 # These need to be moved into covid_news_handling and covid_data_handler
 def schedule_add_news(delay=15, repeat=False):
     """
@@ -112,8 +137,9 @@ def schedule_add_news(delay=15, repeat=False):
     :param repeat: Checks if the scheduled event is to be repeated, default set to False
     :param delay: Delay for the scheduler
     """
-    event = s.enter(delay, 1, news_update())
-    print(event, repeat)
+    # event = s.enter(delay, 1, news_update())
+    # print(event, repeat)
+    return
 
 
 def schedule_update_data(delay=15, repeat=False):
@@ -161,22 +187,9 @@ def index():
                 repeat = request.args.get('repeat')
                 data_to_update = request.args.get('covid-data')
                 news_to_update = request.args.get('news')
-                # Will update both schedulers if both news and covid data are to be updated
-                # Will also deal if only one is to updated or neither
-                if data_to_update and news_to_update:
-                    event_update(label_name, scheduler_time)
-                    schedule_update_data()
-                    schedule_add_news()
-                elif data_to_update:
-                    event_update(label_name, scheduler_time)
-                    schedule_update_data()
-                elif news_to_update:
-                    event_update(label_name, scheduler_time)
-                    schedule_add_news()
-                else:
-                    print('Nothing to update')
+                add_update(repeat, data_to_update, news_to_update, label_name, scheduler_time)
             else:
-                print("No time provided")
+                logging.info("No time provided")
     # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
                            updates=scheduled_events, image=image_name,

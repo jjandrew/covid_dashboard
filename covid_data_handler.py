@@ -4,6 +4,7 @@ and receives information from the public health England API
 """
 import sched
 import time
+import logging
 from uk_covid19 import Cov19API
 
 
@@ -67,8 +68,14 @@ def covid_API_request(location="Exeter", location_type="ltla"):
         "hospitalCases": "hospitalCases",
         "newCasesBySpecimenDate": "newCasesBySpecimenDate"
     }
-    api = Cov19API(filters=location_entry, structure=data_required)
-    response = api.get_json()
+    response = {}
+    # Tries to retrieve information from the Covid API
+    try:
+        api = Cov19API(filters=location_entry, structure=data_required)
+        response = api.get_json()
+    except Exception as exception:
+        error_message = "Error connection to Covid API: " + str(exception)
+        logging.warning(error_message)
     return response
 
 
@@ -81,18 +88,34 @@ def process_covid_API(covid_json):
     covid_json = covid_json['data']
     # calculates weekly cases by summing last 7 entries exluding most recent entry
     week_cases = 0
-    for i in range(2, 9):
-        week_cases += covid_json[i]['newCasesBySpecimenDate']
+    try:
+        for i in range(2, 9):
+            try:
+                week_cases += covid_json[i]['newCasesBySpecimenDate']
+            except KeyError:
+                logging.warning("Key Error reading new cases by specimen date")
+    except IndexError:
+        logging.warning("Index error reading covid JSON")
     # calculates hospital cases by reading value in JSON file
-    hospital_cases = covid_json[1]['hospitalCases']
+    try:
+        hospital_cases = covid_json[1]['hospitalCases']
+    except KeyError:
+        hospital_cases = "N/A"
+        logging.warning("Key error reading hospital cases from JSON")
     # iterates through json until an entry for cumulative deaths is found
     count = 1
-    while covid_json[count]['cumDailyNsoDeathsByDeathDate'] is None and count < len(covid_json)-1:
-        count += 1
+    try:
+        while covid_json[count]['cumDailyNsoDeathsByDeathDate'] is None and count < len(covid_json)-1:
+            count += 1
+    except KeyError:
+        logging.warning("Key Error reading cumulative numbers of deaths")
     if count == len(covid_json):
-        total_deaths = None
+        total_deaths = "None"
     else:
-        total_deaths = covid_json[count]['cumDailyNsoDeathsByDeathDate']
+        try:
+            total_deaths = covid_json[count]['cumDailyNsoDeathsByDeathDate']
+        except KeyError:
+            logging.info("Key Error reading cumulative numbers of deaths")
     return week_cases, hospital_cases, total_deaths
 
 
@@ -114,3 +137,6 @@ def update_covid_data():
     """
     # print(process_covid_API(covid_API_request()))
     return
+
+
+covid_API_request()

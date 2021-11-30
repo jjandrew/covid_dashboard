@@ -21,7 +21,7 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
     base_url = "https://newsapi.org/v2/everything?"
     _, _, _, news_api_key, _, _ = decode_config()
     if news_api_key == "":
-        print("Error: No API key provided")
+        logging.warning("No API Key Provided")
         return []
     api_key = get_newsapi_key()
     # Splits terms taken in as arguments into an array of the separate terms split by a space
@@ -33,8 +33,9 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
         try:
             response = requests.get(complete_url)
             responses.append(response.json())
-        except Exception as e:
-            logging.warning(e)
+        except Exception as exception:
+            error_message = "Error connection to NewsAPI: " + str(exception)
+            logging.warning(error_message)
     return responses
 
 
@@ -56,13 +57,19 @@ def update_news(test=None):
     articles = []
     # Cycles through responses adding each article to an array
     for response in api_responses:
-        for article in response['articles']:
-            # Checks articles haven't already been removed
-            if article['title'] not in removed:
-                articles.append(article)
+        try:
+            for article in response['articles']:
+                try:
+                    # Checks articles haven't already been removed
+                    if article['title'] not in removed:
+                        articles.append(article)
+                except KeyError:
+                    logging.warning("Key Error reading article title from news JSON")
+        except KeyError:
+            logging.warning("Key Error reading articles from news JSON")
     # Checks if a test is to be carried out
     if test:
-        assert len(api_responses) == 3
+        assert api_responses
         assert articles
         assert decode_config()
     return articles
@@ -74,6 +81,3 @@ def update_removed_news(title):
     :param title: The title of the event that is to not be searched for again
     """
     removed.append(title)
-
-
-news_API_request()
