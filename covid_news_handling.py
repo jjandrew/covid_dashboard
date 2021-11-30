@@ -3,6 +3,7 @@ This module receives articles from the newsapi
 It has two functions one for calling API and one for processing the responses
 """
 import requests
+import logging
 from keys import get_newsapi_key
 from decode_config import decode_config
 
@@ -29,12 +30,15 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
     # Cycles through the terms given and makes an API request
     for term in terms:
         complete_url = base_url + "q=" + term + "&apiKey=" + api_key
-        response = requests.get(complete_url)
-        responses.append(response.json())
+        try:
+            response = requests.get(complete_url)
+            responses.append(response.json())
+        except Exception as e:
+            logging.warning(e)
     return responses
 
 
-def update_news():
+def update_news(test=None):
     """
     Retrieves api responses and loops through the articles in each of the
     responses appending each article to an array.
@@ -56,6 +60,11 @@ def update_news():
             # Checks articles haven't already been removed
             if article['title'] not in removed:
                 articles.append(article)
+    # Checks if a test is to be carried out
+    if test:
+        assert len(api_responses) == 3
+        assert articles
+        assert decode_config()
     return articles
 
 
@@ -65,3 +74,6 @@ def update_removed_news(title):
     :param title: The title of the event that is to not be searched for again
     """
     removed.append(title)
+
+
+news_API_request()
