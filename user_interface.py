@@ -7,13 +7,12 @@ import logging
 from flask import Flask
 from flask import render_template
 from flask import request
+import covid_data_handler
+from covid_data_handler import update_covid_data
 from decode_config import decode_config
 from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
-from covid_data_handler import process_covid_API
-from covid_data_handler import covid_API_request
-from covid_data_handler import schedule_covid_updates
-
+from shared_data import get_covid_values
 
 # error with internal server error when event is scheduled and run
 # Default values are received for when the website is first opened
@@ -22,46 +21,17 @@ articles = update_news()
 scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
-location, location_type, nation_location, _, _, image_name,  = decode_config()
-week_figs, hospital_figs, total_deaths = 0, 0, 0
-
+location, _, nation_location, _, _, image_name = decode_config()
+week_figs = 0
 
 if image_name == "":
     image_name = "covid_image.jpeg"
 
-
-if location == "" or location_type == "":
+if location == "":
     location = "Exeter"
-    week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
-else:
-    week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request(location,
-                                                                                 location_type))
 
-if nation_location == "":
-    nation_location = "England"
-nation_week_figs, nation_hospital_figs, nation_deaths = process_covid_API(covid_API_request
-                                                                          (nation_location,
-                                                                           "nation"))
-nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
-nation_deaths = "National Total Deaths: " + str(nation_deaths)
-
-
-def news_update():
-    """
-    Procedure for updating the global variable articles
-    This will be called by the scheduler
-    """
-    global articles
-    articles = update_news()
-
-
-def covid_data_update():
-    """
-    Procedure for updating the global variable articles
-    This will be called by the scheduler
-    """
-    global week_figs, hospital_figs, total_deaths
-    week_figs, hospital_figs, total_deaths = process_covid_API(covid_API_request())
+update_covid_data()
+local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths = get_covid_values()
 
 
 def event_update(title, content, to_update, repeat):
@@ -121,39 +91,25 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     """
     if data_to_update and news_to_update:
         event_update(label_name, scheduler_time, 'both', repeat)
-        schedule_covid_updates(scheduler_time, label_name)
-        schedule_add_news()
+        covid_data_handler.schedule_covid_updates(scheduler_time, label_name)
+        # schedule_add_news()
     elif data_to_update:
         event_update(label_name, scheduler_time, 'covid', repeat)
-        schedule_covid_updates(scheduler_time, label_name)
+        covid_data_handler.schedule_covid_updates(scheduler_time, label_name)
     elif news_to_update:
         event_update(label_name, scheduler_time, 'news', repeat)
-        schedule_add_news()
+        # schedule_add_news()
     else:
         logging.info('Nothing provided to update')
 
 
-# These need to be moved into covid_news_handling and covid_data_handler
-def schedule_add_news(delay=15, repeat=False):
-    """
-    Adds an event to the scheduler to update the news
-    :param repeat: Checks if the scheduled event is to be repeated, default set to False
-    :param delay: Delay for the scheduler
-    """
-    # event = s.enter(delay, 1, news_update())
-    # print(event, repeat)
-    return
-
-
-def schedule_update_data(delay=15, repeat=False):
-    """
-    Adds an event to the scheduler to update covid data
-    :param repeat: Checks if the scheduled event is to be repeated, default set to False
-    :param delay: Delay for the scheduler
-    """
-    # event = s.enter(delay, 1, news_update())
-    # print(event, repeat)
-    return
+def set_covid_figures(local_figs, national_week_figs, national_hospital_figs, national_deaths):
+    global week_figs, nation_week_figs, nation_hospital_figs, nation_deaths
+    week_figs = local_figs
+    nation_week_figs = national_week_figs
+    nation_hospital_figs = national_hospital_figs
+    nation_deaths = national_deaths
+    print(week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
 
 
 @app.route('/index')
