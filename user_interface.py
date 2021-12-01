@@ -22,7 +22,6 @@ scheduled_events = []
 app = Flask(__name__)
 s = sched.scheduler(time.time, time.sleep)
 location, _, nation_location, _, _, image_name = decode_config()
-week_figs = 0
 
 if image_name == "":
     image_name = "covid_image.jpeg"
@@ -152,7 +151,7 @@ def index():
     # Assigns values to the parts of the application
     return render_template('index.html', title='Daily Update', news_articles=articles,
                            updates=scheduled_events, image=image_name,
-                           local_7day_infections=week_figs,
+                           local_7day_infections=local_week_figs,
                            national_7day_infections=nation_week_figs,
                            hospital_cases=nation_hospital_figs, deaths_total=nation_deaths,
                            location=location, nation_location=nation_location)
