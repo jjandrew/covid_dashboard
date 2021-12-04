@@ -134,7 +134,7 @@ def schedule_covid_updates(update_interval, update_name):
     """
     update_interval = hhmm_to_secs(update_interval)
     scheduler = get_scheduler()
-    scheduler.enter(10, 1, update_covid_data())
+    job = scheduler.enter(5, 1, update_covid_data, ())
     update_scheduler(scheduler)
     return scheduler
 
@@ -156,3 +156,4 @@ def update_covid_data():
     nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
     nation_deaths = "National Total Deaths: " + str(nation_deaths)
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
+    print("Ran")

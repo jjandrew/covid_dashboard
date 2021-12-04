@@ -9,10 +9,12 @@ from flask import render_template
 from flask import request
 import covid_data_handler
 from covid_data_handler import update_covid_data
+from shared_data import set_covid_values
 from decode_config import decode_config
 from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
 from shared_data import get_covid_values
+from shared_data import get_scheduler
 
 # error with internal server error when event is scheduled and run
 # Default values are received for when the website is first opened
@@ -20,7 +22,6 @@ from shared_data import get_covid_values
 articles = update_news()
 scheduled_events = []
 app = Flask(__name__)
-s = sched.scheduler(time.time, time.sleep)
 location, _, nation_location, _, _, image_name = decode_config()
 
 if image_name == "":
@@ -29,8 +30,8 @@ if image_name == "":
 if location == "":
     location = "Exeter"
 
-update_covid_data()
-local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths = get_covid_values()
+# update_covid_data()
+set_covid_values(0, 0, 0, 0)
 
 
 def event_update(title, content, to_update, repeat):
@@ -120,8 +121,12 @@ def index():
     This procedure also sets the values for events, news, covid data and images
     """
     # Runs the scheduler making sure not to stop other commands being carried out
+    s = get_scheduler()
     if not s.empty():
         s.run(blocking=False)
+        print("Wow")
+    # Retrieves covid values
+    local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths = get_covid_values()
     event_to_remove = request.args.get('update_item')
     news_to_remove = request.args.get('notif')
     if event_to_remove:
