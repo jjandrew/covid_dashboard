@@ -14,6 +14,7 @@ from shared_data import get_covid_values
 from shared_data import get_scheduler
 from shared_data import set_news_articles
 from shared_data import get_news_articles
+from shared_data import set_scheduled_events
 from decode_config import decode_config
 
 # error with internal server error when event is scheduled and run
@@ -22,6 +23,7 @@ from decode_config import decode_config
 articles = update_news()
 set_news_articles(articles)
 scheduled_events = []
+set_scheduled_events(scheduled_events)
 app = Flask(__name__)
 location, _, nation_location, _, _, image_name = decode_config()
 
@@ -45,6 +47,7 @@ def event_update(title, content, to_update, repeat):
     """
     scheduled_events.append({'title': title, 'content': content,
                              'to_update': to_update, 'repeat': repeat})
+    set_scheduled_events(scheduled_events)
 
 
 def remove_event(title):

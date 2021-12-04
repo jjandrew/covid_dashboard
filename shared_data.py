@@ -11,6 +11,7 @@ nation_week_figs = 0
 nation_hospital_figs = 0
 nation_deaths = 0
 articles = []
+scheduled_events = []
 
 
 def get_scheduler():
@@ -69,3 +70,20 @@ def set_news_articles(news_articles):
     """
     global articles
     articles = news_articles
+
+
+def get_scheduled_events():
+    """
+    This function will return scheduled events for use in all modules
+    :return: Scheduled events
+    """
+    return scheduled_events
+
+
+def set_scheduled_events(events):
+    """
+    Will set scheduled events for use in all modules
+    :param events: Scheduled events
+    """
+    global scheduled_events
+    scheduled_events = events

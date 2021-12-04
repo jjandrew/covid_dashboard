@@ -10,6 +10,7 @@ from time_conversions import hhmm_to_secs
 from shared_data import get_scheduler
 from shared_data import update_scheduler
 from shared_data import set_news_articles
+from shared_data import get_scheduled_events
 
 
 removed = []
@@ -95,15 +96,27 @@ def schedule_news_updates(update_interval, update_name):
     :return:
     """
     update_interval = hhmm_to_secs(update_interval)
+    scheduled_events = get_scheduled_events()
+    repeat = False
+    for event in scheduled_events:
+        if event["title"] == update_name:
+            repeat = event["repeat"]
     scheduler = get_scheduler()
-    job = scheduler.enter(5, 1, news_update, ())
+    if repeat:
+        job = scheduler.enter(5, 1, news_update, (True,))
+    else:
+        job = scheduler.enter(5, 1, news_update, ())
     update_scheduler(scheduler)
     return scheduler
 
 
-def news_update():
+def news_update(repeat=False):
     """
     The function called by the scheduler to print the response from news API
     """
     articles = update_news()
     set_news_articles(articles)
+    if repeat:
+        scheduler = get_scheduler()
+        job = scheduler.enter(24*60*60, 1, news_update, (True,))
+        update_scheduler(scheduler)
