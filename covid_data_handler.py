@@ -2,12 +2,10 @@
 This Module processes the data received in the 'nation_2021-10-28.csv' file
 and receives information from the public health England API
 """
-import sched
-import time
 import logging
+from uk_covid19 import Cov19API
 from time_conversions import hhmm_to_secs
 from decode_config import decode_config
-from uk_covid19 import Cov19API
 from shared_data import get_scheduler
 from shared_data import update_scheduler
 from shared_data import set_covid_values
@@ -110,7 +108,8 @@ def process_covid_API(covid_json):
     # iterates through json until an entry for cumulative deaths is found
     count = 1
     try:
-        while covid_json[count]['cumDailyNsoDeathsByDeathDate'] is None and count < len(covid_json)-1:
+        while covid_json[count]['cumDailyNsoDeathsByDeathDate'] is None and \
+                count < len(covid_json)-1:
             count += 1
     except KeyError:
         logging.warning("Key Error reading cumulative numbers of deaths")

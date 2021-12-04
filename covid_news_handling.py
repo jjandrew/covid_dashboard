@@ -2,8 +2,8 @@
 This module receives articles from the newsapi
 It has two functions one for calling API and one for processing the responses
 """
-import requests
 import logging
+import requests
 from keys import get_newsapi_key
 from decode_config import decode_config
 from time_conversions import hhmm_to_secs

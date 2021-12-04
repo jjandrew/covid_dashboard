@@ -7,7 +7,6 @@ from flask import render_template
 from flask import request
 import covid_data_handler
 from covid_data_handler import update_covid_data
-from decode_config import decode_config
 from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
 from covid_news_handling import schedule_news_updates
@@ -15,6 +14,7 @@ from shared_data import get_covid_values
 from shared_data import get_scheduler
 from shared_data import set_news_articles
 from shared_data import get_news_articles
+from decode_config import decode_config
 
 # error with internal server error when event is scheduled and run
 # Default values are received for when the website is first opened
