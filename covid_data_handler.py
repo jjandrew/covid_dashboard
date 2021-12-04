@@ -156,4 +156,3 @@ def update_covid_data():
     nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
     nation_deaths = "National Total Deaths: " + str(nation_deaths)
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
-    print("Ran")

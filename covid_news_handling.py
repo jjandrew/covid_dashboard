@@ -6,6 +6,10 @@ import requests
 import logging
 from keys import get_newsapi_key
 from decode_config import decode_config
+from time_conversions import hhmm_to_secs
+from shared_data import get_scheduler
+from shared_data import update_scheduler
+from shared_data import set_news_articles
 
 
 removed = []
@@ -81,3 +85,25 @@ def update_removed_news(title):
     :param title: The title of the event that is to not be searched for again
     """
     removed.append(title)
+
+
+def schedule_news_updates(update_interval, update_name):
+    """
+    Will carry out the event denoted by update_name after the interval shown by update_interval
+    :param update_interval: Time of the update
+    :param update_name: Name of the update
+    :return:
+    """
+    update_interval = hhmm_to_secs(update_interval)
+    scheduler = get_scheduler()
+    job = scheduler.enter(5, 1, news_update, ())
+    update_scheduler(scheduler)
+    return scheduler
+
+
+def news_update():
+    """
+    The function called by the scheduler to print the response from news API
+    """
+    articles = update_news()
+    set_news_articles(articles)

@@ -1,25 +1,26 @@
 """
 This is the main module which will deal with flask and the flow of the program
 """
-import sched
-import time
 import logging
 from flask import Flask
 from flask import render_template
 from flask import request
 import covid_data_handler
 from covid_data_handler import update_covid_data
-from shared_data import set_covid_values
 from decode_config import decode_config
 from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
+from covid_news_handling import schedule_news_updates
 from shared_data import get_covid_values
 from shared_data import get_scheduler
+from shared_data import set_news_articles
+from shared_data import get_news_articles
 
 # error with internal server error when event is scheduled and run
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
 articles = update_news()
+set_news_articles(articles)
 scheduled_events = []
 app = Flask(__name__)
 location, _, nation_location, _, _, image_name = decode_config()
@@ -30,8 +31,7 @@ if image_name == "":
 if location == "":
     location = "Exeter"
 
-# update_covid_data()
-set_covid_values(0, 0, 0, 0)
+update_covid_data()
 
 
 def event_update(title, content, to_update, repeat):
@@ -43,7 +43,8 @@ def event_update(title, content, to_update, repeat):
     :param title: Title of the event
     :param content: Content displayed under the title
     """
-    scheduled_events.append({'title': title, 'content': content, 'to_update': to_update, 'repeat': repeat})
+    scheduled_events.append({'title': title, 'content': content,
+                             'to_update': to_update, 'repeat': repeat})
 
 
 def remove_event(title):
@@ -92,24 +93,15 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     if data_to_update and news_to_update:
         event_update(label_name, scheduler_time, 'both', repeat)
         covid_data_handler.schedule_covid_updates(scheduler_time, label_name)
-        # schedule_add_news()
+        schedule_news_updates(scheduler_time, label_name)
     elif data_to_update:
         event_update(label_name, scheduler_time, 'covid', repeat)
         covid_data_handler.schedule_covid_updates(scheduler_time, label_name)
     elif news_to_update:
         event_update(label_name, scheduler_time, 'news', repeat)
-        # schedule_add_news()
+        schedule_news_updates(scheduler_time, label_name)
     else:
         logging.info('Nothing provided to update')
-
-
-def set_covid_figures(local_figs, national_week_figs, national_hospital_figs, national_deaths):
-    global week_figs, nation_week_figs, nation_hospital_figs, nation_deaths
-    week_figs = local_figs
-    nation_week_figs = national_week_figs
-    nation_hospital_figs = national_hospital_figs
-    nation_deaths = national_deaths
-    print(week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
 
 
 @app.route('/index')
@@ -121,12 +113,12 @@ def index():
     This procedure also sets the values for events, news, covid data and images
     """
     # Runs the scheduler making sure not to stop other commands being carried out
-    s = get_scheduler()
-    if not s.empty():
-        s.run(blocking=False)
-        print("Wow")
-    # Retrieves covid values
+    scheduler = get_scheduler()
+    if not scheduler.empty():
+        scheduler.run(blocking=False)
+    # Retrieves covid values and news articles
     local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths = get_covid_values()
+    articles = get_news_articles()
     event_to_remove = request.args.get('update_item')
     news_to_remove = request.args.get('notif')
     if event_to_remove:

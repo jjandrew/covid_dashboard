@@ -7,6 +7,7 @@ local_week_figs = 0
 nation_week_figs = 0
 nation_hospital_figs = 0
 nation_deaths = 0
+articles = []
 
 
 def get_scheduler():
@@ -28,3 +29,12 @@ def set_covid_values(local_figs, national_week_figs, national_hospital_figs, nat
     nation_week_figs = national_week_figs
     nation_hospital_figs = national_hospital_figs
     nation_deaths = national_deaths
+
+
+def get_news_articles():
+    return articles
+
+
+def set_news_articles(news_articles):
+    global articles
+    articles = news_articles
