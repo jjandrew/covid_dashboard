@@ -4,12 +4,12 @@ and receives information from the public health England API
 """
 import logging
 from uk_covid19 import Cov19API
-from time_conversions import time_difference
 from decode_config import decode_config
 from shared_data import get_scheduler
 from shared_data import update_scheduler
 from shared_data import set_covid_values
 from shared_data import get_scheduled_events
+from shared_data import set_scheduled_events
 
 
 def parse_csv_data(csv_filename):
@@ -139,16 +139,53 @@ def schedule_covid_updates(update_interval, update_name):
             repeat = event["repeat"]
     scheduler = get_scheduler()
     if repeat:
-        job = scheduler.enter(update_interval, 1, update_covid_data, (True,))
+        job = scheduler.enter(update_interval, 1, update_covid_data, (update_name, True,))
     else:
-        job = scheduler.enter(update_interval, 1, update_covid_data, ())
+        job = scheduler.enter(update_interval, 1, update_covid_data, (update_name,))
     update_scheduler(scheduler)
     return scheduler
 
 
-def update_covid_data(repeat=False):
+def update_covid_data(update_name, repeat=False):
     """
     The function called by the scheduler to print the covid data from the API
+    :param update_name:
+    :param repeat:
+    :return:
+    """
+    scheduled_events = get_scheduled_events()
+    for event in scheduled_events:
+        if event["title"] == update_name:
+            location, location_type, nation_location, _, _, _ = decode_config()
+            if location == "" or location_type == "":
+                local_week_figs, _, _ = process_covid_API(covid_API_request())
+            else:
+                local_week_figs, _, _ = process_covid_API(covid_API_request(location, location_type))
+            if nation_location == "":
+                nation_location = "England"
+            nation_week_figs, nation_hospital_figs, nation_deaths = process_covid_API(covid_API_request
+                                                                                      (nation_location,
+                                                                                       "nation"))
+            nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
+            nation_deaths = "National Total Deaths: " + str(nation_deaths)
+            set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
+            if repeat:
+                scheduler = get_scheduler()
+                job = scheduler.enter(24*60*60, 1, update_covid_data, (update_name, True,))
+                update_scheduler(scheduler)
+            else:
+                for event in scheduled_events:
+                    if event["title"] == update_name:
+                        if event["to_update"] == 'both':
+                            break
+                        else:
+                            scheduled_events.remove(event)
+                            set_scheduled_events(scheduled_events)
+
+
+def get_starting_data():
+    """
+    Function to retrieve the starting values for the user interface
     """
     location, location_type, nation_location, _, _, _ = decode_config()
     if location == "" or location_type == "":
@@ -163,7 +200,3 @@ def update_covid_data(repeat=False):
     nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
     nation_deaths = "National Total Deaths: " + str(nation_deaths)
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
-    if repeat:
-        scheduler = get_scheduler()
-        job = scheduler.enter(24*60*60, 1, update_covid_data, (True,))
-        update_scheduler(scheduler)

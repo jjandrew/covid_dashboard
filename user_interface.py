@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 import covid_data_handler
 from covid_data_handler import update_covid_data
+from covid_data_handler import get_starting_data
 from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
 from covid_news_handling import schedule_news_updates
@@ -34,7 +35,7 @@ if image_name == "":
 if location == "":
     location = "Exeter"
 
-update_covid_data()
+get_starting_data()
 
 
 def event_update(title, content, to_update, repeat):

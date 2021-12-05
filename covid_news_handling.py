@@ -11,6 +11,7 @@ from shared_data import get_scheduler
 from shared_data import update_scheduler
 from shared_data import set_news_articles
 from shared_data import get_scheduled_events
+from shared_data import set_scheduled_events
 
 
 removed = []
@@ -102,20 +103,30 @@ def schedule_news_updates(update_interval, update_name):
             repeat = event["repeat"]
     scheduler = get_scheduler()
     if repeat:
-        job = scheduler.enter(update_interval, 1, news_update, (True,))
+        job = scheduler.enter(update_interval, 1, news_update, (update_name, True,))
     else:
-        job = scheduler.enter(update_interval, 1, news_update, ())
+        job = scheduler.enter(update_interval, 1, news_update, (update_name,))
     update_scheduler(scheduler)
     return scheduler
 
 
-def news_update(repeat=False):
+def news_update(update_name, repeat=False):
     """
     The function called by the scheduler to print the response from news API
+    :param update_name: Name of the update to be carried out
+    :param repeat: Whether the event is to be repeated
     """
-    articles = update_news()
-    set_news_articles(articles)
-    if repeat:
-        scheduler = get_scheduler()
-        job = scheduler.enter(24*60*60, 1, news_update, (True,))
-        update_scheduler(scheduler)
+    scheduled_events = get_scheduled_events()
+    for event in scheduled_events:
+        if event["title"] == update_name:
+            articles = update_news()
+            set_news_articles(articles)
+            if repeat:
+                scheduler = get_scheduler()
+                job = scheduler.enter(24 * 60 * 60, 1, news_update, (update_name, True,))
+                update_scheduler(scheduler)
+            else:
+                for event in scheduled_events:
+                    if event["title"] == update_name:
+                        scheduled_events.remove(event)
+                set_scheduled_events(scheduled_events)
