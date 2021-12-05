@@ -6,7 +6,6 @@ from flask import Flask
 from flask import render_template
 from flask import request
 import covid_data_handler
-from covid_data_handler import update_covid_data
 from covid_data_handler import get_starting_data
 from covid_news_handling import update_news
 from covid_news_handling import update_removed_news
@@ -95,10 +94,13 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     :param label_name: The name of the event to be added
     :param scheduler_time: The time the event is to be added
     """
+    # Checks update interval is of a valid format
     update_interval = time_difference(scheduler_time)
     if update_interval is None:
         logging.info("Unable to schedule event due to invalid time format")
     else:
+        # Checks what is to be updated
+        # Then adds event to scheduled_events and adds to scheduler
         if data_to_update and news_to_update:
             event_update(label_name, scheduler_time, 'both', repeat)
             covid_data_handler.schedule_covid_updates(update_interval, label_name)
