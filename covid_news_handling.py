@@ -6,7 +6,7 @@ import logging
 import requests
 from keys import get_newsapi_key
 from decode_config import decode_config
-from time_conversions import hhmm_to_secs
+from time_conversions import time_difference
 from shared_data import get_scheduler
 from shared_data import update_scheduler
 from shared_data import set_news_articles
@@ -95,7 +95,10 @@ def schedule_news_updates(update_interval, update_name):
     :param update_name: Name of the update
     :return:
     """
-    update_interval = hhmm_to_secs(update_interval)
+    update_interval = time_difference(update_interval)
+    if update_interval is None:
+        logging.info("Unable to schedule event due to invalid entry")
+        return None
     scheduled_events = get_scheduled_events()
     repeat = False
     for event in scheduled_events:
@@ -103,9 +106,9 @@ def schedule_news_updates(update_interval, update_name):
             repeat = event["repeat"]
     scheduler = get_scheduler()
     if repeat:
-        job = scheduler.enter(5, 1, news_update, (True,))
+        job = scheduler.enter(update_interval, 1, news_update, (True,))
     else:
-        job = scheduler.enter(5, 1, news_update, ())
+        job = scheduler.enter(update_interval, 1, news_update, ())
     update_scheduler(scheduler)
     return scheduler
 

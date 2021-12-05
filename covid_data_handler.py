@@ -4,7 +4,7 @@ and receives information from the public health England API
 """
 import logging
 from uk_covid19 import Cov19API
-from time_conversions import hhmm_to_secs
+from time_conversions import time_difference
 from decode_config import decode_config
 from shared_data import get_scheduler
 from shared_data import update_scheduler
@@ -132,7 +132,10 @@ def schedule_covid_updates(update_interval, update_name):
     :param update_name: Name of the update
     :return:
     """
-    update_interval = hhmm_to_secs(update_interval)
+    update_interval = time_difference(update_interval)
+    if update_interval is None:
+        logging.info("Unable to schedule event due to invalid format")
+        return None
     scheduled_events = get_scheduled_events()
     repeat = False
     for event in scheduled_events:
@@ -140,9 +143,9 @@ def schedule_covid_updates(update_interval, update_name):
             repeat = event["repeat"]
     scheduler = get_scheduler()
     if repeat:
-        job = scheduler.enter(5, 1, update_covid_data, (True,))
+        job = scheduler.enter(update_interval, 1, update_covid_data, (True,))
     else:
-        job = scheduler.enter(5, 1, update_covid_data, ())
+        job = scheduler.enter(update_interval, 1, update_covid_data, ())
     update_scheduler(scheduler)
     return scheduler
 
@@ -151,7 +154,6 @@ def update_covid_data(repeat=False):
     """
     The function called by the scheduler to print the covid data from the API
     """
-    print('Updating')
     location, location_type, nation_location, _, _, _ = decode_config()
     if location == "" or location_type == "":
         local_week_figs, _, _ = process_covid_API(covid_API_request())
@@ -166,7 +168,6 @@ def update_covid_data(repeat=False):
     nation_deaths = "National Total Deaths: " + str(nation_deaths)
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
     if repeat:
-        print("Repeating")
         scheduler = get_scheduler()
         job = scheduler.enter(24*60*60, 1, update_covid_data, (True,))
         update_scheduler(scheduler)
