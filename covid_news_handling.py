@@ -28,13 +28,12 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
     if news_api_key == "":
         logging.warning("No API Key Provided")
         return []
-    api_key = get_newsapi_key()
     # Splits terms taken in as arguments into an array of the separate terms split by a space
     terms = covid_terms.split(" ")
     responses = []
     # Cycles through the terms given and makes an API request
     for term in terms:
-        complete_url = base_url + "q=" + term + "&apiKey=" + api_key
+        complete_url = base_url + "q=" + term + "&apiKey=" + news_api_key
         try:
             response = requests.get(complete_url)
             responses.append(response.json())
