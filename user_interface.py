@@ -18,7 +18,7 @@ from shared_data import set_scheduled_events
 from decode_config import decode_config
 from time_conversions import time_difference
 
-# error with internal server error when event is scheduled and run
+
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
 articles = update_news()
@@ -34,6 +34,7 @@ if image_name == "":
 if location == "":
     location = "Exeter"
 
+# Retrieves the starting covid data for the dashboard
 get_starting_data()
 
 
@@ -59,6 +60,7 @@ def remove_event(title):
     for event in scheduled_events:
         if event['title'] == title:
             scheduled_events.remove(event)
+            set_scheduled_events(scheduled_events)
             break
     logging.warning("No event found with that name")
 
@@ -81,7 +83,7 @@ def remove_news_from_home():
     Changes articles when news has been removed so that the display can be updated
     """
     global articles
-    articles = update_news()
+    articles = get_news_articles()
 
 
 def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_time):
@@ -134,6 +136,7 @@ def index():
     news_to_remove = request.args.get('notif')
     if event_to_remove:
         remove_event(event_to_remove)
+        articles = get_news_articles()
     # Checks if there is news to be removed
     if news_to_remove:
         # Will remove news from being searched for and update the display

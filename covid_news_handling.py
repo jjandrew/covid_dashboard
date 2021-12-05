@@ -86,6 +86,8 @@ def update_removed_news(title):
     :param title: The title of the event that is to not be searched for again
     """
     removed.append(title)
+    articles = update_news()
+    set_news_articles(articles)
 
 
 def schedule_news_updates(update_interval, update_name):
