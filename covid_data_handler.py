@@ -130,20 +130,22 @@ def schedule_covid_updates(update_interval, update_name):
     Will carry out the event denoted by update_name after the interval shown by update_interval
     :param update_interval: Time of the update
     :param update_name: Name of the update
-    :return:
     """
+    # Retrieves events that are currently scheduled
     scheduled_events = get_scheduled_events()
     repeat = False
+    # Checks if the event is to be repeated or not
     for event in scheduled_events:
         if event["title"] == update_name:
             repeat = event["repeat"]
+    # Will schedule the event to occur at the given interval
     scheduler = get_scheduler()
     if repeat:
-        job = scheduler.enter(update_interval, 1, update_covid_data, (update_name, True,))
+        scheduler.enter(update_interval, 1, update_covid_data, (update_name, True,))
     else:
-        job = scheduler.enter(update_interval, 1, update_covid_data, (update_name,))
+        scheduler.enter(update_interval, 1, update_covid_data, (update_name,))
+    # Updates the general scheduler
     update_scheduler(scheduler)
-    return scheduler
 
 
 def update_covid_data(update_name, repeat=False):
@@ -154,44 +156,55 @@ def update_covid_data(update_name, repeat=False):
     :return:
     """
     scheduled_events = get_scheduled_events()
+    # Checks if event is already present
     for event in scheduled_events:
         if event["title"] == update_name:
+            # If present it will carry out the function
+            # Will retrieve data from the config file
             location, location_type, nation_location, _, _, _ = decode_config()
+            # Will retrieve local covid data
             if location == "" or location_type == "":
                 local_week_figs, _, _ = process_covid_API(covid_API_request())
             else:
-                local_week_figs, _, _ = process_covid_API(covid_API_request(location, location_type))
+                local_week_figs, _, _ = process_covid_API(covid_API_request(location,
+                                                                            location_type))
+            # will retrieve national covid data
             if nation_location == "":
                 nation_location = "England"
-            nation_week_figs, nation_hospital_figs, nation_deaths = process_covid_API(covid_API_request
-                                                                                      (nation_location,
-                                                                                       "nation"))
+            nation_week_figs, nation_hospital_figs, nation_deaths = \
+                process_covid_API(covid_API_request(nation_location, "nation"))
             nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
             nation_deaths = "National Total Deaths: " + str(nation_deaths)
+            # Will set values from covid_api_calls so the user interface can be updated
             set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
+            # Will check if the event is to be repeated
             if repeat:
                 scheduler = get_scheduler()
-                job = scheduler.enter(24*60*60, 1, update_covid_data, (update_name, True,))
+                scheduler.enter(24*60*60, 1, update_covid_data, (update_name, True,))
                 update_scheduler(scheduler)
             else:
-                for event in scheduled_events:
-                    if event["title"] == update_name:
-                        if event["to_update"] == 'both':
-                            break
-                        else:
-                            scheduled_events.remove(event)
-                            set_scheduled_events(scheduled_events)
+                # Will automatically remove the event from the scheduled events when carried out
+                for scheduled_event in scheduled_events:
+                    if scheduled_event["title"] == update_name and \
+                            scheduled_event["to_update"] == 'both':
+                        break
+                    if scheduled_event["title"] == update_name:
+                        scheduled_events.remove(event)
+                        set_scheduled_events(scheduled_events)
 
 
 def get_starting_data():
     """
     Function to retrieve the starting values for the user interface
     """
+    # Retrieves data from the config files for the API call
     location, location_type, nation_location, _, _, _ = decode_config()
+    # Will retrieve the local covid data
     if location == "" or location_type == "":
         local_week_figs, _, _ = process_covid_API(covid_API_request())
     else:
         local_week_figs, _, _ = process_covid_API(covid_API_request(location, location_type))
+    # Will retrieve the national covid data
     if nation_location == "":
         nation_location = "England"
     nation_week_figs, nation_hospital_figs, nation_deaths = process_covid_API(covid_API_request
@@ -199,4 +212,5 @@ def get_starting_data():
                                                                                "nation"))
     nation_hospital_figs = "National Hospital Cases: " + str(nation_hospital_figs)
     nation_deaths = "National Total Deaths: " + str(nation_deaths)
+    # Will set covid values so that the user interface can be updated
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
