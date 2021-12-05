@@ -6,7 +6,6 @@ import logging
 import requests
 from keys import get_newsapi_key
 from decode_config import decode_config
-from time_conversions import time_difference
 from shared_data import get_scheduler
 from shared_data import update_scheduler
 from shared_data import set_news_articles
@@ -96,18 +95,21 @@ def schedule_news_updates(update_interval, update_name):
     :param update_name: Name of the update
     :return:
     """
+    # Retrieves a list of scheduled events
     scheduled_events = get_scheduled_events()
+    # Checks if the event is to be repeated
     repeat = False
     for event in scheduled_events:
         if event["title"] == update_name:
             repeat = event["repeat"]
     scheduler = get_scheduler()
+    # Adds the event to the scheduler
     if repeat:
-        job = scheduler.enter(update_interval, 1, news_update, (update_name, True,))
+        scheduler.enter(update_interval, 1, news_update, (update_name, True,))
     else:
-        job = scheduler.enter(update_interval, 1, news_update, (update_name,))
+        scheduler.enter(update_interval, 1, news_update, (update_name,))
+    # Updates the scheduler
     update_scheduler(scheduler)
-    return scheduler
 
 
 def news_update(update_name, repeat=False):
@@ -116,17 +118,23 @@ def news_update(update_name, repeat=False):
     :param update_name: Name of the update to be carried out
     :param repeat: Whether the event is to be repeated
     """
+    # Retrieves the scheduled events
     scheduled_events = get_scheduled_events()
+    # Checks if event is still in scheduled events
     for event in scheduled_events:
         if event["title"] == update_name:
+            # Updates news articles
             articles = update_news()
             set_news_articles(articles)
+            # Checks if event is to be repeated
             if repeat:
                 scheduler = get_scheduler()
-                job = scheduler.enter(24 * 60 * 60, 1, news_update, (update_name, True,))
+                # Adds event to the scheduler for 24 hours time and updates scheduler
+                scheduler.enter(24 * 60 * 60, 1, news_update, (update_name, True,))
                 update_scheduler(scheduler)
             else:
-                for event in scheduled_events:
-                    if event["title"] == update_name:
-                        scheduled_events.remove(event)
+                # Removes event from scheduled events if it is not to be repeated
+                for scheduled_event in scheduled_events:
+                    if scheduled_event["title"] == update_name:
+                        scheduled_events.remove(scheduled_event)
                 set_scheduled_events(scheduled_events)
