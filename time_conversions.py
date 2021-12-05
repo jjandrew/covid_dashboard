@@ -17,17 +17,20 @@ def time_difference(scheduled_time):
         logging.warning('Wrong format for passing in time')
         return None
     try:
+        error = False
         if int(parts[0]) > 23:
             logging.warning('Hour format for scheduled time is too big')
-            return None
+            error = True
         if int(parts[1]) > 59:
             logging.warning('Minute format for scheduled time is too big')
-            return None
+            error = True
         if int(parts[0]) < 0:
             logging.warning('Hour format for scheduled time is too small')
-            return None
+            error = True
         if int(parts[1]) < 0:
             logging.warning('Minute format for scheduled time is too small')
+            error = True
+        if error is True:
             return None
     except ValueError:
         logging.warning("Time must be an integer")
