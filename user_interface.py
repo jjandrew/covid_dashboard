@@ -16,6 +16,7 @@ from shared_data import set_news_articles
 from shared_data import get_news_articles
 from shared_data import set_scheduled_events
 from decode_config import decode_config
+from time_conversions import time_difference
 
 # error with internal server error when event is scheduled and run
 # Default values are received for when the website is first opened
@@ -93,18 +94,22 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     :param label_name: The name of the event to be added
     :param scheduler_time: The time the event is to be added
     """
-    if data_to_update and news_to_update:
-        event_update(label_name, scheduler_time, 'both', repeat)
-        covid_data_handler.schedule_covid_updates(scheduler_time, label_name)
-        schedule_news_updates(scheduler_time, label_name)
-    elif data_to_update:
-        event_update(label_name, scheduler_time, 'covid', repeat)
-        covid_data_handler.schedule_covid_updates(scheduler_time, label_name)
-    elif news_to_update:
-        event_update(label_name, scheduler_time, 'news', repeat)
-        schedule_news_updates(scheduler_time, label_name)
+    update_interval = time_difference(scheduler_time)
+    if update_interval is None:
+        logging.info("Unable to schedule event due to invalid time format")
     else:
-        logging.info('Nothing provided to update')
+        if data_to_update and news_to_update:
+            event_update(label_name, scheduler_time, 'both', repeat)
+            covid_data_handler.schedule_covid_updates(update_interval, label_name)
+            schedule_news_updates(update_interval, label_name)
+        elif data_to_update:
+            event_update(label_name, scheduler_time, 'covid', repeat)
+            covid_data_handler.schedule_covid_updates(update_interval, label_name)
+        elif news_to_update:
+            event_update(label_name, scheduler_time, 'news', repeat)
+            schedule_news_updates(update_interval, label_name)
+        else:
+            logging.info('Nothing provided to update')
 
 
 @app.route('/index')
@@ -136,7 +141,7 @@ def index():
     if label_name:
         # Checks if event is already in scheduler
         if event_exists(label_name):
-            print("Error: Event already present")
+            logging.warning("Event already present")
         else:
             # Checks if a time has been added along with an article
             scheduler_time = request.args.get('update')

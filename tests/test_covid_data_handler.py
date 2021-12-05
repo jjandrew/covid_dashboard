@@ -28,4 +28,4 @@ def test_covid_API_request():
 
 def test_schedule_covid_updates():
     assert schedule_covid_updates(10, 'update test')
-#    schedule_covid_updates(update_interval=10, update_name='update test')
+    schedule_covid_updates(update_interval=10, update_name='update test')

@@ -95,10 +95,6 @@ def schedule_news_updates(update_interval, update_name):
     :param update_name: Name of the update
     :return:
     """
-    update_interval = time_difference(update_interval)
-    if update_interval is None:
-        logging.info("Unable to schedule event due to invalid entry")
-        return None
     scheduled_events = get_scheduled_events()
     repeat = False
     for event in scheduled_events:
