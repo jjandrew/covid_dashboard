@@ -22,9 +22,13 @@ def parse_csv_data(csv_filename):
     data = []
     # Iterates through the file and strips '\n' from each line before
     # adding the line as a string to the data list
-    with open(csv_filename, 'r', encoding="utf-8") as file:
-        for row in file:
-            data.append(row.rstrip())
+    try:
+        with open(csv_filename, 'r', encoding="utf-8") as file:
+            for row in file:
+                data.append(row.rstrip())
+    except FileNotFoundError:
+        logging.warning("Invalid csv file name")
+        data = []
     return data
 
 
@@ -37,6 +41,8 @@ def process_covid_csv_data(covid_csv_data):
     :param covid_csv_data:
     :return: weekly cases, hospital cases, cumulative deaths as integers
     """
+    if covid_csv_data == []:
+        return "Error", "Error", "Error"
     # calculates weekly cases by summing last 7 entries
     week_cases = 0
     for i in range(3, 10):
@@ -127,7 +133,7 @@ def process_covid_API(covid_json):
     except IndexError:
         logging.warning("Index Error reading cumulative numbers of deaths: Probably due to invalid API call")
     if count == len(covid_json):
-        total_deaths = "None"
+        total_deaths = "Error"
     else:
         try:
             total_deaths = covid_json[count]['cumDailyNsoDeathsByDeathDate']
@@ -161,14 +167,14 @@ def schedule_covid_updates(update_interval, update_name):
         scheduler.enter(update_interval, 1, update_covid_data, (update_name,))
     # Updates the general scheduler
     update_scheduler(scheduler)
+    return scheduler
 
 
 def update_covid_data(update_name, repeat=False):
     """
     The function called by the scheduler to print the covid data from the API
-    :param update_name:
-    :param repeat:
-    :return:
+    :param update_name: Name of the update to be carried out
+    :param repeat: Whether or not the update is to be repeated
     """
     scheduled_events = get_scheduled_events()
     # Checks if event is already present
