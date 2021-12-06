@@ -4,7 +4,6 @@ It has two functions one for calling API and one for processing the responses
 """
 import logging
 import requests
-from keys import get_newsapi_key
 from decode_config import decode_config
 from shared_data import get_scheduler
 from shared_data import update_scheduler

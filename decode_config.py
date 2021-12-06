@@ -1,4 +1,5 @@
 import json
+import logging
 
 
 def decode_config(file_name='config.json'):
@@ -29,7 +30,7 @@ def decode_config(file_name='config.json'):
     try:
         news_api_key = json_file["news_api_key"]
     except KeyError:
-        print("Error: No key provided in config file")
+        logging.warning("No key provided in config file")
         news_api_key = ""
     try:
         search_terms = json_file["search_terms"]

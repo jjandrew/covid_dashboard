@@ -3,6 +3,7 @@ This Module processes the data received in the 'nation_2021-10-28.csv' file
 and receives information from the public health England API
 """
 import logging
+import json
 from uk_covid19 import Cov19API
 from decode_config import decode_config
 from shared_data import get_scheduler
@@ -212,14 +213,24 @@ def update_covid_data(update_name, repeat=False):
                     if scheduled_event["title"] == update_name:
                         scheduled_events.remove(event)
                         set_scheduled_events(scheduled_events)
+    test_statement = "Complete"
+    if not scheduled_events:
+        test_statement = "No scheduled events"
+    return test_statement
 
 
-def get_starting_data():
+def get_starting_data(test=""):
     """
     Function to retrieve the starting values for the user interface
     """
     # Retrieves data from the config files for the API call
     location, location_type, nation_location, _, _, _ = decode_config()
+    if test == 'test1':
+        file = open('test.json')
+        json_file = json.load(file)
+        location = json_file['location']
+        location_type = json_file["location_type"]
+        nation_location = json_file["nation_location"]
     # Will retrieve the local covid data
     if location == "" or location_type == "":
         local_week_figs, _, _ = process_covid_API(covid_API_request())
@@ -235,3 +246,7 @@ def get_starting_data():
     nation_deaths = "National Total Deaths: " + str(nation_deaths)
     # Will set covid values so that the user interface can be updated
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
+    if test == "test1":
+        return local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths
+    else:
+        return "Complete"

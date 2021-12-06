@@ -3,6 +3,8 @@ from covid_data_handler import process_covid_csv_data
 from covid_data_handler import covid_API_request
 from covid_data_handler import process_covid_API
 from covid_data_handler import schedule_covid_updates
+from covid_data_handler import update_covid_data
+from covid_data_handler import get_starting_data
 
 
 def test_parse_csv_data():
@@ -43,3 +45,13 @@ def test_process_covid_API():
 def test_schedule_covid_updates():
     assert schedule_covid_updates(10, 'update test')
     schedule_covid_updates(update_interval=10, update_name='update test')
+
+
+def test_update_covid_data():
+    assert update_covid_data("test") == "No scheduled events"
+
+
+def test_get_starting_data():
+    assert get_starting_data("test1") == ("Error", "Error", "National Hospital Cases: Error",
+                                          "National Total Deaths: Error")
+    assert get_starting_data() == "Complete"
