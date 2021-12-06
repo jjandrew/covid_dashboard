@@ -28,12 +28,6 @@ set_scheduled_events(scheduled_events)
 app = Flask(__name__)
 location, _, nation_location, _, _, image_name = decode_config()
 
-if image_name == "":
-    image_name = "covid_image.jpeg"
-
-if location == "":
-    location = "Exeter"
-
 # Retrieves the starting covid data for the dashboard
 get_starting_data()
 

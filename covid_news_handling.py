@@ -26,7 +26,7 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
     base_url = "https://newsapi.org/v2/everything?"
     _, _, _, news_api_key, _, _ = decode_config()
     if news_api_key == "":
-        logging.warning("No API Key Provided")
+        logging.warning("No News API Key Provided")
         return []
     # Splits terms taken in as arguments into an array of the separate terms split by a space
     terms = covid_terms.split(" ")

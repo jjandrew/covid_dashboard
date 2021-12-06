@@ -89,8 +89,12 @@ def process_covid_API(covid_json):
     :param covid_json: Data retrieved from the API call
     :return: weekly cases, hospital cases, total deaths
     """
-    covid_json = covid_json['data']
-    # calculates weekly cases by summing last 7 entries exluding most recent entry
+    try:
+        covid_json = covid_json['data']
+    except KeyError:
+        logging.warning("Incorrect information in config file: Covid API error")
+        return "Error", "Error", "Error"
+    # calculates weekly cases by summing last 7 entries excluding most recent entry
     week_cases = 0
     try:
         for i in range(2, 9):
@@ -98,14 +102,20 @@ def process_covid_API(covid_json):
                 week_cases += covid_json[i]['newCasesBySpecimenDate']
             except KeyError:
                 logging.warning("Key Error reading new cases by specimen date")
+                week_cases = "Error"
+                break
     except IndexError:
         logging.warning("Index error reading covid JSON")
+        week_cases = "Error"
     # calculates hospital cases by reading value in JSON file
     try:
         hospital_cases = covid_json[1]['hospitalCases']
     except KeyError:
-        hospital_cases = "N/A"
+        hospital_cases = "Error"
         logging.warning("Key error reading hospital cases from JSON")
+    except IndexError:
+        hospital_cases = "Error"
+        logging.warning("Index error reading hospital cases from JSON: Probably due to invalid API call")
     # iterates through json until an entry for cumulative deaths is found
     count = 1
     try:
@@ -114,6 +124,8 @@ def process_covid_API(covid_json):
             count += 1
     except KeyError:
         logging.warning("Key Error reading cumulative numbers of deaths")
+    except IndexError:
+        logging.warning("Index Error reading cumulative numbers of deaths: Probably due to invalid API call")
     if count == len(covid_json):
         total_deaths = "None"
     else:
@@ -122,6 +134,9 @@ def process_covid_API(covid_json):
         except KeyError:
             total_deaths = "Error"
             logging.info("Key Error reading cumulative numbers of deaths")
+        except IndexError:
+            total_deaths = "Error"
+            logging.info("Index Error reading cumulative numbers of deaths: Probably due to invalid API call")
     return week_cases, hospital_cases, total_deaths
 
 
