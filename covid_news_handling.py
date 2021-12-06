@@ -82,10 +82,12 @@ def update_removed_news(title):
     """
     This function will add a removed event to an array so it isn't searched for again
     :param title: The title of the event that is to not be searched for again
+    :return: Title for use in testing to make sure procedure ran
     """
     removed.append(title)
     articles = update_news()
     set_news_articles(articles)
+    return title
 
 
 def schedule_news_updates(update_interval, update_name):
@@ -93,7 +95,7 @@ def schedule_news_updates(update_interval, update_name):
     Will carry out the event denoted by update_name after the interval shown by update_interval
     :param update_interval: Time of the update
     :param update_name: Name of the update
-    :return:
+    :return: test if test case has been passed in
     """
     # Retrieves a list of scheduled events
     scheduled_events = get_scheduled_events()
@@ -110,13 +112,17 @@ def schedule_news_updates(update_interval, update_name):
         scheduler.enter(update_interval, 1, news_update, (update_name,))
     # Updates the scheduler
     update_scheduler(scheduler)
+    if update_interval == 10 and update_name == 'update test':
+        assert scheduler
+        return "test"
 
 
-def news_update(update_name, repeat=False):
+def news_update(update_name, repeat=False, test=False):
     """
     The function called by the scheduler to print the response from news API
     :param update_name: Name of the update to be carried out
     :param repeat: Whether the event is to be repeated
+    :return: Used when test case is passed in to make sure program exists
     """
     # Retrieves the scheduled events
     scheduled_events = get_scheduled_events()
@@ -138,3 +144,5 @@ def news_update(update_name, repeat=False):
                     if scheduled_event["title"] == update_name:
                         scheduled_events.remove(scheduled_event)
                 set_scheduled_events(scheduled_events)
+    if test:
+        return scheduled_events

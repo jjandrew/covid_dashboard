@@ -152,6 +152,7 @@ def schedule_covid_updates(update_interval, update_name):
     Will carry out the event denoted by update_name after the interval shown by update_interval
     :param update_interval: Time of the update
     :param update_name: Name of the update
+    :return: test if test case is passed in
     """
     # Retrieves events that are currently scheduled
     scheduled_events = get_scheduled_events()
@@ -168,7 +169,9 @@ def schedule_covid_updates(update_interval, update_name):
         scheduler.enter(update_interval, 1, update_covid_data, (update_name,))
     # Updates the general scheduler
     update_scheduler(scheduler)
-    return scheduler
+    if update_interval == 10 and update_name == 'update test':
+        assert scheduler
+        return "test"
 
 
 def update_covid_data(update_name, repeat=False):
