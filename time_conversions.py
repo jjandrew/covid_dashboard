@@ -49,4 +49,4 @@ def time_difference(scheduled_time):
         total_seconds = 24*60*60 - seconds
     else:
         total_seconds = hour_time_dif*60*60 + min_time_dif*60 - seconds
-        return total_seconds
+    return total_seconds

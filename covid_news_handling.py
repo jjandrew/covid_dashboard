@@ -115,11 +115,13 @@ def schedule_news_updates(update_interval, update_name):
     if update_interval == 10 and update_name == 'update test':
         assert scheduler
         return "test"
+    return scheduler
 
 
 def news_update(update_name, repeat=False, test=False):
     """
     The function called by the scheduler to print the response from news API
+    :param test: Checks if test case is to be passed in (default False)
     :param update_name: Name of the update to be carried out
     :param repeat: Whether the event is to be repeated
     :return: Used when test case is passed in to make sure program exists
@@ -146,3 +148,4 @@ def news_update(update_name, repeat=False, test=False):
                 set_scheduled_events(scheduled_events)
     if test:
         return scheduled_events
+    return "No test"

@@ -39,7 +39,7 @@ def test_process_covid_API():
     test_data_1 = {"data": [{"Test": 0, "Test1": 1, "Test2": 2},
                             {"Test": 0, "Test1": 1, "Test2": 2},
                             {"Test": 0, "Test1": 1, "Test2": 2}]}
-    assert process_covid_API(test_data) == ("Error", "Error", "Error")
+    assert process_covid_API(test_data_1) == ("Error", "Error", "Error")
 
 
 def test_schedule_covid_updates():

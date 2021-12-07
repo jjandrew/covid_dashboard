@@ -47,10 +47,10 @@ def event_update(title, content, to_update, repeat, test=False):
         events.append({'title': title, 'content': content,
                        'to_update': to_update, 'repeat': repeat})
         return events
-    else:
-        scheduled_events.append({'title': title, 'content': content,
-                                 'to_update': to_update, 'repeat': repeat})
-        set_scheduled_events(scheduled_events)
+    scheduled_events.append({'title': title, 'content': content,
+                             'to_update': to_update, 'repeat': repeat})
+    set_scheduled_events(scheduled_events)
+    return "No test"
 
 
 def remove_event(title):
@@ -111,22 +111,21 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     if update_interval is None:
         logging.info("Unable to schedule event due to invalid time format")
         return False
+    # Checks what is to be updated
+    # Then adds event to scheduled_events and adds to scheduler
+    if data_to_update and news_to_update:
+        event_update(label_name, scheduler_time, 'both', repeat)
+        covid_data_handler.schedule_covid_updates(update_interval, label_name)
+        schedule_news_updates(update_interval, label_name)
+    elif data_to_update:
+        event_update(label_name, scheduler_time, 'covid', repeat)
+        covid_data_handler.schedule_covid_updates(update_interval, label_name)
+    elif news_to_update:
+        event_update(label_name, scheduler_time, 'news', repeat)
+        schedule_news_updates(update_interval, label_name)
     else:
-        # Checks what is to be updated
-        # Then adds event to scheduled_events and adds to scheduler
-        if data_to_update and news_to_update:
-            event_update(label_name, scheduler_time, 'both', repeat)
-            covid_data_handler.schedule_covid_updates(update_interval, label_name)
-            schedule_news_updates(update_interval, label_name)
-        elif data_to_update:
-            event_update(label_name, scheduler_time, 'covid', repeat)
-            covid_data_handler.schedule_covid_updates(update_interval, label_name)
-        elif news_to_update:
-            event_update(label_name, scheduler_time, 'news', repeat)
-            schedule_news_updates(update_interval, label_name)
-        else:
-            logging.info('Nothing provided to update')
-            return False
+        logging.info('Nothing provided to update')
+        return False
     return True
 
 

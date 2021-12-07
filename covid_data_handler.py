@@ -122,7 +122,8 @@ def process_covid_API(covid_json):
         logging.warning("Key error reading hospital cases from JSON")
     except IndexError:
         hospital_cases = "Error"
-        logging.warning("Index error reading hospital cases from JSON: Probably due to invalid API call")
+        warning = "Index error reading hospital cases from JSON: Probably due to invalid API call"
+        logging.warning(warning)
     # iterates through json until an entry for cumulative deaths is found
     count = 1
     try:
@@ -132,7 +133,9 @@ def process_covid_API(covid_json):
     except KeyError:
         logging.warning("Key Error reading cumulative numbers of deaths")
     except IndexError:
-        logging.warning("Index Error reading cumulative numbers of deaths: Probably due to invalid API call")
+        warning = "Index Error reading cumulative numbers of deaths: " \
+                  "Probably due to invalid API call"
+        logging.warning(warning)
     if count == len(covid_json):
         total_deaths = "Error"
     else:
@@ -143,7 +146,9 @@ def process_covid_API(covid_json):
             logging.info("Key Error reading cumulative numbers of deaths")
         except IndexError:
             total_deaths = "Error"
-            logging.info("Index Error reading cumulative numbers of deaths: Probably due to invalid API call")
+            warning = "Index Error reading cumulative numbers of deaths: " \
+                      "Probably due to invalid API call"
+            logging.info(warning)
     return week_cases, hospital_cases, total_deaths
 
 
@@ -172,6 +177,7 @@ def schedule_covid_updates(update_interval, update_name):
     if update_interval == 10 and update_name == 'update test':
         assert scheduler
         return "test"
+    return scheduler
 
 
 def update_covid_data(update_name, repeat=False):
@@ -229,11 +235,11 @@ def get_starting_data(test=""):
     # Retrieves data from the config files for the API call
     location, location_type, nation_location, _, _, _ = decode_config()
     if test == 'test1':
-        file = open('test.json')
-        json_file = json.load(file)
-        location = json_file['location']
-        location_type = json_file["location_type"]
-        nation_location = json_file["nation_location"]
+        with open('test.json', 'r', encoding="utf-8") as file:
+            json_file = json.load(file)
+            location = json_file['location']
+            location_type = json_file["location_type"]
+            nation_location = json_file["nation_location"]
     # Will retrieve the local covid data
     if location == "" or location_type == "":
         local_week_figs, _, _ = process_covid_API(covid_API_request())
@@ -251,5 +257,4 @@ def get_starting_data(test=""):
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
     if test == "test1":
         return local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths
-    else:
-        return "Complete"
+    return "Complete"
