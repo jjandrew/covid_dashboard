@@ -28,7 +28,7 @@ def parse_csv_data(csv_filename):
             for row in file:
                 data.append(row.rstrip())
     except FileNotFoundError:
-        logging.warning("Invalid csv file name")
+        logging.error("Invalid csv file name")
         data = []
     return data
 
@@ -86,7 +86,7 @@ def covid_API_request(location="Exeter", location_type="ltla"):
         response = api.get_json()
     except Exception as exception:
         error_message = "Error connection to Covid API: " + str(exception)
-        logging.warning(error_message)
+        logging.error(error_message)
     return response
 
 

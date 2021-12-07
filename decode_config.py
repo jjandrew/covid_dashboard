@@ -34,7 +34,7 @@ def decode_config(file_name='config.json'):
             try:
                 news_api_key = json_file["news_api_key"]
             except KeyError:
-                logging.warning("No key provided in config file")
+                logging.error("No key provided in config file")
                 news_api_key = ""
             try:
                 search_terms = json_file["search_terms"]
@@ -47,6 +47,6 @@ def decode_config(file_name='config.json'):
             except KeyError:
                 image_name = 'covid_image.jpeg'
     except FileNotFoundError:
-        logging.warning("No config.json File Provided")
+        logging.error("No config.json File Provided")
         return "Exeter", "ltla", "England", "", "", "covid_image.jpeg"
     return location, location_type, nation_location, news_api_key, search_terms, image_name

@@ -20,6 +20,9 @@ from decode_config import decode_config
 from time_conversions import time_difference
 from runtime_tests import schedule_tests
 
+
+logging.basicConfig(filename='logging_file.log', level=logging.INFO)
+
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
 articles = update_news()
@@ -90,7 +93,7 @@ def remove_event(title):
             scheduled_events.remove(event)
             set_scheduled_events(scheduled_events)
             break
-    logging.warning("No event found with that name")
+    logging.error("No event found with that name")
 
 
 def event_exists(title, test=False):
@@ -186,7 +189,7 @@ def index():
     if label_name:
         # Checks if event is already in scheduler
         if event_exists(label_name):
-            logging.warning("Event already present")
+            logging.info("Event already present")
         else:
             # Checks if a time has been added along with an article
             scheduler_time = request.args.get('update')

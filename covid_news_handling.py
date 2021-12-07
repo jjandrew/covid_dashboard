@@ -38,7 +38,7 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
             responses.append(response.json())
         except Exception as exception:
             error_message = "Error connection to NewsAPI: " + str(exception)
-            logging.warning(error_message)
+            logging.error(error_message)
     return responses
 
 
@@ -77,7 +77,7 @@ def update_news(test=None):
             assert articles
             assert decode_config()
         except AssertionError:
-            logging.warning("Error in update news")
+            logging.error("Error in update news")
     return articles
 
 
@@ -119,7 +119,7 @@ def schedule_news_updates(update_interval, update_name):
         try:
             assert scheduler
         except AssertionError:
-            logging.warning("No scheduler present")
+            logging.error("No scheduler present")
         return "test"
     return scheduler
 

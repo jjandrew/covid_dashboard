@@ -61,7 +61,7 @@ def test_news_API_request():
         assert news_API_request('Covid COVID-19 coronavirus') == news_API_request()
         assert news_API_request("Russia China")
     except AssertionError:
-        logging.info("Error in news_API_request")
+        logging.error("Error in news_API_request")
 
 
 def test_update_news():
@@ -71,7 +71,7 @@ def test_update_news():
     try:
         assert update_news()
     except AssertionError:
-        logging.warning("Error with update_news function")
+        logging.error("Error with update_news function")
     update_news('test')
 
 
