@@ -18,7 +18,6 @@ from shared_data import set_scheduled_events
 from decode_config import decode_config
 from time_conversions import time_difference
 
-
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
 articles = update_news()
@@ -32,18 +31,26 @@ location, _, nation_location, _, _, image_name = decode_config()
 get_starting_data()
 
 
-def event_update(title, content, to_update, repeat):
+def event_update(title, content, to_update, repeat, test=False):
     """
     This procedure will add an event to the scheduled_events array
     This will be added to the left hand side of the webpage
+    :param test: Checks whether test case is to be used (default false)
     :param repeat: Whether the event is to be repeated
     :param to_update: What is to be updated
     :param title: Title of the event
     :param content: Content displayed under the title
+    :return: Only used in testing
     """
-    scheduled_events.append({'title': title, 'content': content,
-                             'to_update': to_update, 'repeat': repeat})
-    set_scheduled_events(scheduled_events)
+    if test:
+        events = []
+        events.append({'title': title, 'content': content,
+                       'to_update': to_update, 'repeat': repeat})
+        return events
+    else:
+        scheduled_events.append({'title': title, 'content': content,
+                                 'to_update': to_update, 'repeat': repeat})
+        set_scheduled_events(scheduled_events)
 
 
 def remove_event(title):
@@ -59,9 +66,10 @@ def remove_event(title):
     logging.warning("No event found with that name")
 
 
-def event_exists(title):
+def event_exists(title, test=False):
     """
     Will cycle through events with the title provided from scheduled_events
+    :param test: Checks whether test case is to be user (Default false)
     :param title: the title of the event to be removed
     :return True if event present otherwise False
     """
@@ -69,6 +77,13 @@ def event_exists(title):
     for event in scheduled_events:
         if event['title'] == title:
             present = True
+    if test:
+        events = [{'title': "test event", 'content': "test content",
+                   'to_update': "both", 'repeat': False}]
+        for event in events:
+            if event['title'] == title:
+                return True
+        return False
     return present
 
 
@@ -89,11 +104,13 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
     :param news_to_update: Whether the news is to be update
     :param label_name: The name of the event to be added
     :param scheduler_time: The time the event is to be added
+    :return: Return value to be used in testing
     """
     # Checks update interval is of a valid format
     update_interval = time_difference(scheduler_time)
     if update_interval is None:
         logging.info("Unable to schedule event due to invalid time format")
+        return False
     else:
         # Checks what is to be updated
         # Then adds event to scheduled_events and adds to scheduler
@@ -109,6 +126,8 @@ def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_tim
             schedule_news_updates(update_interval, label_name)
         else:
             logging.info('Nothing provided to update')
+            return False
+    return True
 
 
 @app.route('/index')
