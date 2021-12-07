@@ -17,6 +17,7 @@ from shared_data import get_news_articles
 from shared_data import set_scheduled_events
 from decode_config import decode_config
 from time_conversions import time_difference
+from runtime_tests import schedule_tests
 
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
@@ -29,6 +30,9 @@ location, _, nation_location, _, _, image_name = decode_config()
 
 # Retrieves the starting covid data for the dashboard
 get_starting_data()
+
+# Runs tests
+schedule_tests()
 
 
 def event_update(title, content, to_update, repeat, test=False):

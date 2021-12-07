@@ -70,7 +70,6 @@ def test_get_scheduled_events():
 def test_set_scheduled_events():
     """
     Tests scheduled events can be set and then retrieved
-    :return:
     """
     events = get_scheduled_events()
     set_scheduled_events(events)
