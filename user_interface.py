@@ -12,6 +12,7 @@ from covid_news_handling import update_removed_news
 from covid_news_handling import schedule_news_updates
 from shared_data import get_covid_values
 from shared_data import get_scheduler
+from shared_data import update_scheduler
 from shared_data import set_news_articles
 from shared_data import get_news_articles
 from shared_data import set_scheduled_events
@@ -33,6 +34,28 @@ get_starting_data()
 
 # Runs tests
 schedule_tests()
+
+
+def check_updated_config():
+    """
+    This function will be scheduled to check if config file has been updated
+    Will schedule itself every 5 minutes
+    """
+    global location, nation_location, image_name
+    new_location, _, new_nation_location, _, _, new_image_name = decode_config()
+    if (new_location, new_nation_location, new_image_name) != (location, nation_location, image_name):
+        location = new_location
+        nation_location = new_nation_location
+        image_name = new_image_name
+        get_starting_data()
+        logging.info("Config file updated")
+    scheduler = get_scheduler()
+    scheduler.enter(5 * 60, 1, check_updated_config, ())
+    update_scheduler(scheduler)
+
+
+# Checks for updated config file during runtime
+check_updated_config()
 
 
 def event_update(title, content, to_update, repeat, test=False):
