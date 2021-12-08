@@ -1,5 +1,4 @@
-"""
-Module containing the tests to be carried out during runtime
+"""Module containing the tests to be carried out during runtime
 """
 import logging
 from covid_data_handler import covid_API_request
@@ -17,9 +16,7 @@ from shared_data import set_scheduled_events
 
 
 def test_covid_API_request():
-    """
-    Tests covid_API_request function can make a request and return a dictionary
-    :return:
+    """Tests covid_API_request function can make a request and return a dictionary
     """
     assert covid_API_request()
     data = covid_API_request()
@@ -28,31 +25,28 @@ def test_covid_API_request():
 
 
 def test_schedule_covid_updates():
-    """
-    Tests updates on covid data can be scheduled
+    """Tests updates on covid data can be scheduled
     """
     assert schedule_covid_updates(10, 'update test')
     schedule_covid_updates(update_interval=10, update_name='update test')
 
 
 def test_update_covid_data():
-    """
-    Tests no scheduled events are present when test is passed in
+    """Tests no scheduled events are present when test is passed in
     """
     assert update_covid_data("test") == "No scheduled events"
 
 
 def test_decode_config():
-    """
-    Tests config file can be decoded and tests it can be decoded if file is edited
+    """Tests config file can be decoded and tests it can be decoded if file is edited
     """
     assert decode_config()
     assert decode_config('empty.json') == ("Exeter", "ltla", "England", "", "", 'covid_image.jpeg')
 
 
 def test_news_API_request():
-    """
-    Tests API request can be made
+    """Tests API request can be made
+
     Tests default values are used
     Tests different terms can be used
     """
@@ -65,8 +59,7 @@ def test_news_API_request():
 
 
 def test_update_news():
-    """
-    Tests update_news returns a value
+    """Tests update_news returns a value
     """
     try:
         assert update_news()
@@ -76,23 +69,20 @@ def test_update_news():
 
 
 def test_schedule_news_updates():
-    """
-    Tests updates for the news can be scheduled
+    """Tests updates for the news can be scheduled
     """
     assert schedule_news_updates(10, 'update test')
     schedule_news_updates(update_interval=10, update_name='update test')
 
 
 def test_get_scheduler():
-    """
-    Tests that a scheduler is returned
+    """Tests that a scheduler is returned
     """
     assert get_scheduler()
 
 
 def test_update_scheduler():
-    """
-    Tests that the scheduler can be updated and then retrieved
+    """Tests that the scheduler can be updated and then retrieved
     """
     scheduler = get_scheduler()
     update_scheduler(scheduler)
@@ -100,22 +90,19 @@ def test_update_scheduler():
 
 
 def test_get_news_articles():
-    """
-    Tests news articles are returned as a list
+    """Tests news articles are returned as a list
     """
     assert type(get_news_articles()) is type([])
 
 
 def test_get_scheduled_events():
-    """
-    Tests get_scheduled_events returns a list
+    """Tests get_scheduled_events returns a list
     """
     assert type(get_scheduled_events()) is type([])
 
 
 def test_set_scheduled_events():
-    """
-    Tests scheduled events can be set and then retrieved
+    """Tests scheduled events can be set and then retrieved
     """
     events = get_scheduled_events()
     set_scheduled_events(events)
@@ -123,9 +110,9 @@ def test_set_scheduled_events():
 
 
 def run_tests():
-    """
-    This procedure will execute all of the runtime tests
-    It will then schedule itself again for an hour's time
+    """This procedure will execute all of the runtime tests
+
+    It will then schedule itself again for an 15 minutes time
     """
     test_covid_API_request()
     test_schedule_covid_updates()
@@ -148,8 +135,7 @@ def run_tests():
 
 
 def schedule_tests():
-    """
-    Schedules runtime tests to be carried out
+    """Schedules runtime tests to be carried out
     """
     scheduler = get_scheduler()
     scheduler.enter(1, 1, run_tests, ())

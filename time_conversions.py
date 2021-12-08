@@ -1,13 +1,12 @@
-"""
-Time conversions for use with the scheduler
+"""Time conversions for use with the scheduler
 """
 import logging
 import time
 
 
-def time_difference(scheduled_time):
-    """
-    Will calculate difference between current time and scheduled time in seconds
+def time_difference(scheduled_time: str):
+    """Will calculate difference between current time and scheduled time in seconds
+
     :param scheduled_time: Time passed in url query
     :return: Difference between times in seconds or None if invalid entry
     """

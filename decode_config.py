@@ -1,13 +1,12 @@
-"""
-This module will be used to check that the config file is valid and then return values
+"""This module will be used to check that the config file is valid and then return values
 """
 import json
 import logging
 
 
-def decode_config(file_name='config.json'):
-    """
-    This function reads from the config.json file and will return suitable values
+def decode_config(file_name='config.json') -> tuple:
+    """This function reads from the config.json file and will return suitable values
+
     :return: Relevant values retrieved from the json file
     """
     try:

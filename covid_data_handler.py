@@ -1,6 +1,6 @@
-"""
-This Module processes the data received in the 'nation_2021-10-28.csv' file
-and receives information from the public health England API
+"""This Module processes the data received in the 'nation_2021-10-28.csv' file
+
+Module also receives information from the public health England API
 """
 import logging
 import json
@@ -13,11 +13,11 @@ from shared_data import get_scheduled_events
 from shared_data import set_scheduled_events
 
 
-def parse_csv_data(csv_filename):
-    """
-    This function will read from the 'nation_2021-10-28' file and return a list of strings
+def parse_csv_data(csv_filename: str) -> list:
+    """This function will read from the 'nation_2021-10-28' file and return a list of strings
     corresponding to each line of the csv file.
-    :param csv_filename:
+
+    :param csv_filename: Name of file to be parsed
     :return: List[str] of each line of the csv file
     """
     data = []
@@ -33,14 +33,14 @@ def parse_csv_data(csv_filename):
     return data
 
 
-def process_covid_csv_data(covid_csv_data):
-    """
-    Takes in csv data file as input and calculates:
+def process_covid_csv_data(covid_csv_data: list) -> tuple:
+    """Takes in csv data file as input and calculates:
         Cases for last week excluding most recent value as is incomplete
         Hospital cases
         Cumulative Deaths as up to date as file allows
-    :param covid_csv_data:
-    :return: weekly cases, hospital cases, cumulative deaths as integers
+
+    :param covid_csv_data: Data passed in from parsing function
+    :return: weekly cases, hospital cases, cumulative deaths as integers or Error if error reading
     """
     if covid_csv_data == []:
         return "Error", "Error", "Error"
@@ -58,9 +58,9 @@ def process_covid_csv_data(covid_csv_data):
     return week_cases, hospital_cases, total_deaths
 
 
-def covid_API_request(location="Exeter", location_type="ltla"):
-    """
-    Retrieves COVID data from the public health England API
+def covid_API_request(location="Exeter", location_type="ltla") -> dict:
+    """Retrieves COVID data from the public health England API
+
     Will be able to search based on the location and location_type passed in as parameters
     :param location: location to be searched for in API
     :param location_type: type of entry location is
@@ -90,9 +90,9 @@ def covid_API_request(location="Exeter", location_type="ltla"):
     return response
 
 
-def process_covid_API(covid_json):
-    """
-    Retrieves weekly cases, hospital cases and total deaths from the json
+def process_covid_API(covid_json: dict) -> tuple:
+    """Retrieves weekly cases, hospital cases and total deaths from the json
+
     :param covid_json: Data retrieved from the API call
     :return: weekly cases, hospital cases, total deaths
     """
@@ -152,9 +152,9 @@ def process_covid_API(covid_json):
     return week_cases, hospital_cases, total_deaths
 
 
-def schedule_covid_updates(update_interval, update_name):
-    """
-    Will carry out the event denoted by update_name after the interval shown by update_interval
+def schedule_covid_updates(update_interval: int, update_name: str) -> str:
+    """Will carry out the event denoted by update_name after the interval shown by update_interval
+
     :param update_interval: Time of the update
     :param update_name: Name of the update
     :return: test if test case is passed in
@@ -177,14 +177,15 @@ def schedule_covid_updates(update_interval, update_name):
     if update_interval == 10 and update_name == 'update test':
         assert scheduler
         return "test"
-    return scheduler
+    return "no test"
 
 
-def update_covid_data(update_name, repeat=False):
-    """
-    The function called by the scheduler to print the covid data from the API
+def update_covid_data(update_name: str, repeat=False) -> str:
+    """The function called by the scheduler to print the covid data from the API
+
     :param update_name: Name of the update to be carried out
     :param repeat: Whether or not the update is to be repeated
+    :return: Test statement for use in testing
     """
     scheduled_events = get_scheduled_events()
     # Checks if event is already present
@@ -229,8 +230,8 @@ def update_covid_data(update_name, repeat=False):
 
 
 def get_starting_data(test=""):
-    """
-    Function to retrieve the starting values for the user interface
+    """Function to retrieve the starting values for the user interface
+    :return: Test statement for use if test case is passed in
     """
     # Retrieves data from the config files for the API call
     location, location_type, nation_location, _, _, _ = decode_config()

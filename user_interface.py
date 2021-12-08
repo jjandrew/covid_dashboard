@@ -1,5 +1,4 @@
-"""
-This is the main module which will deal with flask and the flow of the program
+"""This is the main module which will deal with flask and the flow of the program
 """
 import logging
 from flask import Flask
@@ -21,7 +20,7 @@ from time_conversions import time_difference
 from runtime_tests import schedule_tests
 
 
-logging.basicConfig(filename='logging_file.log', level=logging.INFO)
+logging.basicConfig(filename='logging_file.log', level=logging.DEBUG)
 
 # Default values are received for when the website is first opened
 # Scheduler and app are also created here
@@ -40,8 +39,8 @@ schedule_tests()
 
 
 def check_updated_config():
-    """
-    This function will be scheduled to check if config file has been updated
+    """This function will be scheduled to check if config file has been updated
+
     Will schedule itself every 5 minutes
     """
     global location, nation_location, image_name
@@ -61,9 +60,9 @@ def check_updated_config():
 check_updated_config()
 
 
-def event_update(title, content, to_update, repeat, test=False):
-    """
-    This procedure will add an event to the scheduled_events array
+def event_update(title: str, content: str, to_update: str, repeat: bool, test=False):
+    """This procedure will add an event to the scheduled_events array
+
     This will be added to the left hand side of the webpage
     :param test: Checks whether test case is to be used (default false)
     :param repeat: Whether the event is to be repeated
@@ -80,12 +79,12 @@ def event_update(title, content, to_update, repeat, test=False):
     scheduled_events.append({'title': title, 'content': content,
                              'to_update': to_update, 'repeat': repeat})
     set_scheduled_events(scheduled_events)
-    return "No test"
+    return scheduled_events
 
 
-def remove_event(title):
-    """
-    Will remove event with the title provided from scheduled_events
+def remove_event(title: str):
+    """Will remove event with the title provided from scheduled_events
+
     :param title: the title of the event to be removed
     """
     for event in scheduled_events:
@@ -96,7 +95,7 @@ def remove_event(title):
     logging.error("No event found with that name")
 
 
-def event_exists(title, test=False):
+def event_exists(title: str, test=False) -> bool:
     """
     Will cycle through events with the title provided from scheduled_events
     :param test: Checks whether test case is to be user (Default false)
@@ -118,20 +117,20 @@ def event_exists(title, test=False):
 
 
 def remove_news_from_home():
-    """
-    Changes articles when news has been removed so that the display can be updated
+    """Changes articles when news has been removed so that the display can be updated
     """
     global articles
     articles = get_news_articles()
 
 
-def add_update(repeat, data_to_update, news_to_update, label_name, scheduler_time):
-    """
-    Will update both schedulers if both news and covid data are to be updated
+def add_update(repeat, data_to_update, news_to_update,
+               label_name: str, scheduler_time: str) -> bool:
+    """Will update both schedulers if both news and covid data are to be updated
+
     Will also deal if only one is to updated or neither
-    :param repeat: Whether the event is to be repeated every 24 hours
-    :param data_to_update: Whether the covid data is to be update
-    :param news_to_update: Whether the news is to be update
+    :param repeat: Whether the event is to be repeated every 24 hours: Bool
+    :param data_to_update: Whether the covid data is to be update: Bool
+    :param news_to_update: Whether the news is to be update: Bool
     :param label_name: The name of the event to be added
     :param scheduler_time: The time the event is to be added
     :return: Return value to be used in testing

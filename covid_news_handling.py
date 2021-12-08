@@ -1,5 +1,5 @@
-"""
-This module receives articles from the newsapi
+"""This module receives articles from the newsapi
+
 It has two functions one for calling API and one for processing the responses
 """
 import logging
@@ -15,10 +15,10 @@ from shared_data import set_scheduled_events
 removed = []
 
 
-def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
-    """
-    Takes in terms to be searched in the API as a string separated by spaces and
+def news_API_request(covid_terms="Covid COVID-19 coronavirus") -> list:
+    """Takes in terms to be searched in the API as a string separated by spaces and
     returns an array of the responses received from the various API calls
+
     :param covid_terms: Takes in a string separated by spaces of terms to be searched for in the API
     :return: Array of the responses received from the various API calls
     """
@@ -42,7 +42,7 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus"):
     return responses
 
 
-def update_news(test=None):
+def update_news(test=None) -> list:
     """
     Retrieves api responses and loops through the articles in each of the
     responses appending each article to an array.
@@ -81,9 +81,9 @@ def update_news(test=None):
     return articles
 
 
-def update_removed_news(title):
-    """
-    This function will add a removed event to an array so it isn't searched for again
+def update_removed_news(title: str) -> str:
+    """This function will add a removed event to an array so it isn't searched for again
+
     :param title: The title of the event that is to not be searched for again
     :return: Title for use in testing to make sure procedure ran
     """
@@ -93,9 +93,9 @@ def update_removed_news(title):
     return title
 
 
-def schedule_news_updates(update_interval, update_name):
-    """
-    Will carry out the event denoted by update_name after the interval shown by update_interval
+def schedule_news_updates(update_interval: int, update_name: str) -> str:
+    """Will carry out the event denoted by update_name after the interval shown by update_interval
+
     :param update_interval: Time of the update
     :param update_name: Name of the update
     :return: test if test case has been passed in
@@ -121,12 +121,12 @@ def schedule_news_updates(update_interval, update_name):
         except AssertionError:
             logging.error("No scheduler present")
         return "test"
-    return scheduler
+    return "No test"
 
 
-def news_update(update_name, repeat=False, test=False):
-    """
-    The function called by the scheduler to print the response from news API
+def news_update(update_name: str, repeat=False, test=False) -> list:
+    """The function called by the scheduler to print the response from news API
+
     :param test: Checks if test case is to be passed in (default False)
     :param update_name: Name of the update to be carried out
     :param repeat: Whether the event is to be repeated
@@ -154,4 +154,4 @@ def news_update(update_name, repeat=False, test=False):
                 set_scheduled_events(scheduled_events)
     if test:
         return scheduled_events
-    return "No test"
+    return []
