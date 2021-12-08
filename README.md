@@ -5,6 +5,36 @@ This application provides up to date Covid data and news articles to a user with
 schedule updates for the future.
 The Covid data and news articles returned can be edited within the config.json file.
 
+##How to Use:
+###Home Screen
+####Schedule Update
+- Enter valid time, name and selection of boxes.
+- If an incorrect time or name that is already in use is entered the update will not be scheduled.
+  - As well as this if no checkbox is selected update will not be scheduled.
+####Delete Update
+- Select the cross arrow on the top right of the update.
+####Delete News Article
+- Select the cross arrow on the top right of the news article.
+- This news article will not appear when another news update is made.
+###config.json
+- location
+  - The location for more specific Covid case data to be searched for.
+- location_type
+  - The type of location that is to be searched for.
+  - Types possible are:
+    - nation, region, utla, ltla, msoa, postcode, nhsRegion, nhsTrust
+  - More information found here:
+    - https://coronavirus.data.gov.uk/details/developers-guide/generic-api
+- nation_location
+  - Name of the country Covid data is to be searched for in.
+- news_api_key
+  - API key for https://newsapi.org/
+  - Key can be generated here:
+    - https://newsapi.org/register
+- search_terms
+  - Series of one word search terms, separated by spaces to be searched for in news articles.
+- image_name
+  - Name of the image in covid_dashboard/static/images to be displayed at the top of the webpage.
 
 ## Code Modules:
 
