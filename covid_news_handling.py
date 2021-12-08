@@ -43,9 +43,9 @@ def news_API_request(covid_terms="Covid COVID-19 coronavirus") -> list:
 
 
 def update_news(test=None) -> list:
-    """
-    Retrieves api responses and loops through the articles in each of the
+    """Retrieves api responses and loops through the articles in each of the
     responses appending each article to an array.
+
     :return: articles returned from the various API calls or empty array if no key provided
     """
     # Will check if search terms were provided in the config file

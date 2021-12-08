@@ -21,7 +21,7 @@ def test_event_exists():
 
 
 def test_add_update():
-    """Tests that is is not possible to add updates with invalid entries
+    """Tests that it is not possible to add updates with invalid entries
     """
     assert add_update(False, True, True, 'test event', "24:61") is False
     assert add_update(False, False, False, 'test event', "21:51") is False

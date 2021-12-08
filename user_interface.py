@@ -96,8 +96,8 @@ def remove_event(title: str):
 
 
 def event_exists(title: str, test=False) -> bool:
-    """
-    Will cycle through events with the title provided from scheduled_events
+    """Will cycle through events with the title provided from scheduled_events
+
     :param test: Checks whether test case is to be user (Default false)
     :param title: the title of the event to be removed
     :return True if event present otherwise False
@@ -160,11 +160,12 @@ def add_update(repeat, data_to_update, news_to_update,
 
 @app.route('/index')
 def index():
-    """
-    The function that is called when directing to the /index part of the webpage
+    """The function that is called when directing to the /index part of the webpage
+
     This is the main homescreen of the webpage and will be refreshed every minute
     This procedure checks if an action has been carried out on the webpage
     This procedure also sets the values for events, news, covid data and images
+    :return: The template for the webpage
     """
     # Runs the scheduler making sure not to stop other commands being carried out
     scheduler = get_scheduler()

@@ -15,6 +15,7 @@ scheduled_events = []
 
 def get_scheduler():
     """Will return the scheduler to the user_interface
+
     :return: scheduler
     """
     return scheduler

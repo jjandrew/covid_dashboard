@@ -10,7 +10,7 @@ from covid_data_handler import get_starting_data
 
 
 def test_parse_csv_data():
-    """Tests the parce_csv_data function returns the correct values
+    """Tests the parse_csv_data function returns the correct values
     """
     assert parse_csv_data('nation_2021-10-28.csv')
     data = parse_csv_data('nation_2021-10-28.csv')

@@ -184,7 +184,7 @@ def update_covid_data(update_name: str, repeat=False) -> str:
     """The function called by the scheduler to print the covid data from the API
 
     :param update_name: Name of the update to be carried out
-    :param repeat: Whether or not the update is to be repeated
+    :param repeat: Whether the update is to be repeated
     :return: Test statement for use in testing
     """
     scheduled_events = get_scheduled_events()
@@ -231,6 +231,7 @@ def update_covid_data(update_name: str, repeat=False) -> str:
 
 def get_starting_data(test=""):
     """Function to retrieve the starting values for the user interface
+
     :return: Test statement for use if test case is passed in
     """
     # Retrieves data from the config files for the API call
