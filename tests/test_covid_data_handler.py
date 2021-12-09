@@ -19,7 +19,7 @@ def test_parse_csv_data():
 
 
 def test_process_covid_csv_data():
-    """Tests the process_covid_csv_data function can handle information correctly and deal with errors
+    """Tests the process_covid_csv_data function can handle information and deal with errors
     """
     assert process_covid_csv_data(parse_csv_data('nation_2021-10-28.csv'))
     last7days_cases, current_hospital_cases, total_deaths = \

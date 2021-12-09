@@ -36,13 +36,15 @@ def test_set_covid_values():
     """
     local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths = get_covid_values()
     set_covid_values(local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
-    assert get_covid_values() == (local_week_figs, nation_week_figs, nation_hospital_figs, nation_deaths)
+    assert get_covid_values() == (local_week_figs, nation_week_figs, nation_hospital_figs,
+                                  nation_deaths)
 
 
 def test_get_news_articles():
     """Tests news articles are returned as a list
     """
-    assert type(get_news_articles()) is type([])
+    data = get_news_articles()
+    assert isinstance(data, list)
 
 
 def test_set_news_articles():
@@ -56,7 +58,8 @@ def test_set_news_articles():
 def test_get_scheduled_events():
     """Tests get_scheduled_events returns a list
     """
-    assert type(get_scheduled_events()) is type([])
+    data = get_scheduled_events()
+    assert isinstance(data, list)
 
 
 def test_set_scheduled_events():

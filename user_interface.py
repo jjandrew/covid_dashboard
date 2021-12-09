@@ -45,7 +45,8 @@ def check_updated_config():
     """
     global location, nation_location, image_name
     new_location, _, new_nation_location, _, _, new_image_name = decode_config()
-    if (new_location, new_nation_location, new_image_name) != (location, nation_location, image_name):
+    if (new_location, new_nation_location, new_image_name) != (location, nation_location,
+                                                               image_name):
         location = new_location
         nation_location = new_nation_location
         image_name = new_image_name

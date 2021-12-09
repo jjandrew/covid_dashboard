@@ -41,4 +41,5 @@ def test_schedule_news_updates():
 def test_news_update():
     """Tests news_update returns an array
     """
-    assert type(news_update("test", False, True)) is type([])
+    data = news_update("test", False, True)
+    assert isinstance(data, list)

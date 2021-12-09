@@ -17,24 +17,34 @@ The Covid data and news articles returned can be edited within the config.json f
 - Select the cross arrow on the top right of the news article.
 - This news article will not appear when another news update is made.
 ###config.json
+####Description
+The configuration file to be used for editting the data shown on the user interface. To
+use default values leave each value as an empty string ("").
+####Items
 - location
   - The location for more specific Covid case data to be searched for.
+  - Default - "Exeter"
 - location_type
   - The type of location that is to be searched for.
   - Types possible are:
     - nation, region, utla, ltla, msoa, postcode, nhsRegion, nhsTrust
   - More information found here:
     - https://coronavirus.data.gov.uk/details/developers-guide/generic-api
+  - Default - "ltla"
 - nation_location
   - Name of the country Covid data is to be searched for in.
+  - Default - "England"
 - news_api_key
   - API key for https://newsapi.org/
   - Key can be generated here:
     - https://newsapi.org/register
 - search_terms
   - Series of one word search terms, separated by spaces to be searched for in news articles.
+  - Not case-sensitive.
+  - Default - covid, covid-19, coronavirus.
 - image_name
   - Name of the image in covid_dashboard/static/images to be displayed at the top of the webpage.
+  - Default - covid_image.jpeg
 
 ## Code Modules:
 

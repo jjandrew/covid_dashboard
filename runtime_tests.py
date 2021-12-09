@@ -92,13 +92,15 @@ def test_update_scheduler():
 def test_get_news_articles():
     """Tests news articles are returned as a list
     """
-    assert type(get_news_articles()) is type([])
+    data = get_news_articles()
+    assert isinstance(data, list)
 
 
 def test_get_scheduled_events():
     """Tests get_scheduled_events returns a list
     """
-    assert type(get_scheduled_events()) is type([])
+    data = get_scheduled_events()
+    assert isinstance(data, list)
 
 
 def test_set_scheduled_events():
