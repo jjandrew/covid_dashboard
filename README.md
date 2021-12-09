@@ -5,6 +5,10 @@ This application provides up to date Covid data and news articles to a user with
 schedule updates for the future.
 The Covid data and news articles returned can be edited within the config.json file.
 
+##GitHub Link
+This link will allow developers to edit and improve the code:
+- https://github.com/jjandrew/covid_dashboard
+
 ##How to Use:
 ###Home Screen
 ####Schedule Update
